@@ -2,7 +2,7 @@ import "server-only";
 
 import { createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
 import { cookies, headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { getConfig } from "./config";
 import { getDb } from "./db";
@@ -38,10 +38,10 @@ export async function getViewer(): Promise<Viewer | null> {
   return { email, isAdmin: email === getConfig().adminEmail, participant: resolveParticipant(getDb(), email) };
 }
 
-/** The viewer as a participant; redirects home otherwise. */
+/** The viewer as a participant; 404 otherwise (the (app) layout shows the outsider page). */
 export async function requireParticipant(): Promise<{ viewer: Viewer; me: Participant }> {
   const viewer = await getViewer();
-  if (!viewer?.participant) redirect("/");
+  if (!viewer?.participant) notFound();
   return { viewer, me: viewer.participant };
 }
 

@@ -1,0 +1,68 @@
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  margin: auto auto 0;
+  padding: 10px 16px calc(22px + env(safe-area-inset-bottom));
+  border: 0;
+  border-radius: 24px 24px 0 0;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.sheet::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+
+.sheet[open] {
+  animation: rise 0.22s ease-out;
+}
+
+.grab {
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: #d8ccb4;
+  margin: 0 auto 12px;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.label small {
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.field {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--cream);
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--fir);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
