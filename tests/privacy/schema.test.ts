@@ -58,3 +58,13 @@ describe("privacy rules 1-3: schema", () => {
     expect(columns.sort()).toEqual([...allowed].sort());
   });
 });
+
+describe("privacy rule 3: no hidden insertion order", () => {
+  it("keeps read state and anonymous messages in key order, not insertion order", () => {
+    const db = testDb();
+    for (const table of ["read_state", "anon_message"]) {
+      const sql = db.prepare("SELECT sql FROM sqlite_master WHERE name = ?").pluck().get(table) as string;
+      expect(sql, table).toMatch(/WITHOUT ROWID/i);
+    }
+  });
+});

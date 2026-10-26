@@ -29,10 +29,11 @@ export const MIGRATIONS: string[] = [
     payload_enc TEXT NOT NULL
   );
 
+  -- WITHOUT ROWID: rows sit in random-UUID order, so no hidden rowid keeps the sending order.
   CREATE TABLE anon_message (
     id TEXT PRIMARY KEY,
     payload_enc TEXT NOT NULL
-  );
+  ) WITHOUT ROWID;
 
   CREATE TABLE group_message (
     id INTEGER PRIMARY KEY,
@@ -67,6 +68,6 @@ export const MIGRATIONS: string[] = [
     kind TEXT NOT NULL CHECK (kind IN ('giftee', 'santa', 'group', 'ideas')),
     last_read_at_enc TEXT NOT NULL,
     PRIMARY KEY (participant_id, kind)
-  );
+  ) WITHOUT ROWID;
   `,
 ];
