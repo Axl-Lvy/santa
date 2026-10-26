@@ -5,6 +5,7 @@ import { useState } from "react";
 import styles from "@/app/_components/card.module.css";
 import { Sheet } from "@/app/_components/sheet";
 import sheetStyles from "@/app/_components/sheet.module.css";
+import { TrollDraw } from "@/app/_components/troll-draw";
 import { useAction } from "@/app/_components/use-action";
 import { deleteIdeaAction, saveIdeaAction } from "@/lib/actions/ideas";
 
@@ -27,6 +28,15 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
 
   return (
     <>
+      <TrollDraw
+        variant="page"
+        people={people}
+        onPick={(title, forPerson) => {
+          open({ id: null, target: forPerson, body: title });
+          setSelected(forPerson);
+        }}
+      />
+
       <div className={ui.people} role="group" aria-label="Pour qui as-tu une idée ?">
         {people.map((p) => (
           <button
@@ -95,6 +105,10 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
               value={draft.body}
               placeholder="Il parle tout le temps de…"
               onChange={(e) => setDraft({ ...draft, body: e.target.value })}
+            />
+            <TrollDraw
+              people={people}
+              onPick={(title) => setDraft((d) => (d ? { ...d, body: title } : d))}
             />
             {error ? <p className={styles.error}>{error}</p> : null}
             <button
