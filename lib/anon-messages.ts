@@ -33,9 +33,11 @@ export function postAnon(
     createdAt: now().toISOString(),
   };
   const { id, ...payload } = message;
+  // Rows carry no order (WITHOUT ROWID), so a sealed sequence number breaks timestamp ties.
+  const seq = db.prepare("SELECT count(*) FROM anon_message").pluck().get() as number;
   db.prepare("INSERT INTO anon_message (id, payload_enc) VALUES (?, ?)").run(
     id,
-    box().seal(payload),
+    box().seal({ ...payload, seq }),
   );
   return message;
 }
@@ -47,7 +49,17 @@ export function listAnonThread(db: Db, gifteeId: number): AnonMessage[] {
     payload_enc: string;
   }[];
   return rows
-    .map((r) => ({ id: r.id, ...box().open<Omit<AnonMessage, "id">>(r.payload_enc) }))
+    .map((r) => ({
+      id: r.id,
+      ...box().open<Omit<AnonMessage, "id"> & { seq?: number }>(r.payload_enc),
+    }))
     .filter((m) => m.gifteeId === gifteeId)
-    .sort((x, y) => x.createdAt.localeCompare(y.createdAt));
+    .sort((x, y) => x.createdAt.localeCompare(y.createdAt) || (x.seq ?? 0) - (y.seq ?? 0))
+    .map(({ id, gifteeId: g, direction, body, createdAt }) => ({
+      id,
+      gifteeId: g,
+      direction,
+      body,
+      createdAt,
+    }));
 }

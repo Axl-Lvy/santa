@@ -6,8 +6,10 @@ import * as bus from "./bus";
 import { ValidationError } from "./errors";
 import { notifyAnon } from "./notify";
 import { getParticipant } from "./participants";
+import { setNow } from "./time";
 
 afterEach(() => {
+  setNow(null);
   resetAssignmentCache();
   vi.restoreAllMocks();
 });
@@ -40,6 +42,15 @@ describe("anonymous threads", () => {
       ["from_giftee", "Non !"],
     ]);
     expect(listAnonThread(db, a.id)).toEqual([]);
+  });
+
+  it("keeps sending order for messages sent in the same millisecond", () => {
+    const { db, a, b } = drawnFamily();
+    setNow(new Date("2026-12-01T10:00:00.000Z"));
+    for (let i = 0; i < 20; i++) postAnon(db, i % 2 ? b : a, i % 2 ? "santa" : "giftee", `m${i}`);
+    expect(listAnonThread(db, b.id).map((m) => m.body)).toEqual(
+      Array.from({ length: 20 }, (_, i) => `m${i}`),
+    );
   });
 
   it("stores opaque rows with no body or date in clear (rule 3)", () => {
