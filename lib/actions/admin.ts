@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 
 import { getDb } from "../db";
-import { ValidationError } from "../errors";
+import { runDraw } from "../draw";
+import { UserError, ValidationError } from "../errors";
 import { setBudget } from "../event";
+import { resendDrawEmail } from "../mail/draw-emails";
 import { addParticipant, removeParticipant, updateParticipant } from "../participants";
 import { addRule, removeRule } from "../rules";
 import { requireAdmin } from "../viewer";
@@ -47,4 +49,21 @@ export async function setBudgetAction(raw: string): Promise<ActionResult> {
     if (!/^\d+$/.test(trimmed)) throw new ValidationError("Le budget doit être un nombre entier d'euros.");
     setBudget(getDb(), Number(trimmed));
   });
+}
+
+export async function launchDrawAction(): Promise<ActionResult> {
+  return adminDo(() => runDraw(getDb()));
+}
+
+export async function resendDrawEmailAction(id: number): Promise<ActionResult> {
+  await requireAdmin();
+  const result = await attempt(async () => {
+    try {
+      await resendDrawEmail(getDb(), id);
+    } catch {
+      throw new UserError("L'email n'est pas parti. Réessaie dans un moment.");
+    }
+  });
+  revalidatePath("/organisation");
+  return result;
 }

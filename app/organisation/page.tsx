@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import styles from "@/app/_components/card.module.css";
-import { adminChecks } from "@/lib/admin-checks";
+import { adminChecks, adminStatus } from "@/lib/admin-checks";
 import { getConfig } from "@/lib/config";
 import { getDb } from "@/lib/db";
 import { getEvent } from "@/lib/event";
@@ -9,7 +9,9 @@ import { listParticipants } from "@/lib/participants";
 import { listRules } from "@/lib/rules";
 import { requireAdmin } from "@/lib/viewer";
 
+import { AfterDraw } from "./after-draw";
 import { BudgetForm } from "./budget-form";
+import { DrawButton } from "./draw-button";
 import { LoginMessage } from "./login-message";
 import admin from "./organisation.module.css";
 import { ParticipantForm } from "./participant-form";
@@ -22,7 +24,29 @@ export default async function Organisation() {
   const db = getDb();
   const people = listParticipants(db).map(({ id, firstName, email }) => ({ id, firstName, email }));
   const rules = listRules(db).map(([a, b]) => [a, b] as [number, number]);
-  const { budgetEur } = getEvent(db);
+  const { budgetEur, drawnAt } = getEvent(db);
+
+  if (drawnAt) {
+    const status = adminStatus(db);
+    const drawnOn = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long" }).format(
+      new Date(drawnAt),
+    );
+    return (
+      <main className={styles.page} style={{ paddingBottom: 40 }}>
+        <Link href="/" className={styles.back}>
+          ‹ Accueil
+        </Link>
+        <h1 className={styles.title}>
+          <span className={styles.kicker}>Organisation</span>
+          Le tirage est fait 🎉
+        </h1>
+        <AfterDraw drawnOn={drawnOn} rows={status.rows} />
+        <BudgetForm budgetEur={budgetEur} />
+        <ParticipantForm people={people} locked />
+      </main>
+    );
+  }
+
   const checks = adminChecks(db, viewer.email);
 
   return (
@@ -50,9 +74,7 @@ export default async function Organisation() {
           </div>
         ) : null}
       </div>
-      <button type="button" className={`${styles.button} ${styles.buttonBrick}`} disabled>
-        Lancer le tirage 🎲
-      </button>
+      <DrawButton disabled={!checks.drawPossible} count={people.length} />
 
       <LoginMessage appUrl={getConfig().appUrl} />
     </main>

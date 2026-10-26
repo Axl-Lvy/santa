@@ -152,3 +152,15 @@
   font-size: 14px;
   margin: 0;
 }
+
+.statusOk {
+  color: #2f6b3a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.statusNo {
+  color: var(--brick);
+  font-size: 13px;
+  font-weight: 800;
+}

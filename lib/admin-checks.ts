@@ -1,5 +1,7 @@
 import type { Db } from "./db";
+import { getEvent } from "./event";
 import { resolveParticipant } from "./identity";
+import { listParticipants } from "./participants";
 import { listRules } from "./rules";
 import { isDrawPossible, possibleSantas } from "./solver";
 
@@ -15,5 +17,19 @@ export function adminChecks(
   return {
     drawPossible: isDrawPossible(ids, rules),
     mystery: count === null ? null : { count, warn: count <= 2 },
+  };
+}
+
+export type AdminStatusRow = { id: number; firstName: string; status: "revealed" | "pending" | "email-not-sent" };
+
+/** After the draw: who has revealed, never who drew whom (privacy rule 7). */
+export function adminStatus(db: Db): { drawnAt: string; rows: AdminStatusRow[] } {
+  return {
+    drawnAt: getEvent(db).drawnAt ?? "",
+    rows: listParticipants(db).map((p) => ({
+      id: p.id,
+      firstName: p.firstName,
+      status: p.revealedAt ? "revealed" : p.drawEmailSentAt ? "pending" : "email-not-sent",
+    })),
   };
 }
