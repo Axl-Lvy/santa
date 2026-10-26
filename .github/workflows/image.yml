@@ -22,6 +22,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      # The image build runs `next build` without any runtime env; fail here first if it would.
+      - run: npm run build
 
   image:
     needs: test

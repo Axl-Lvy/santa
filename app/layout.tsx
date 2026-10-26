@@ -16,6 +16,10 @@ const nunito = Nunito({
   weight: ["400", "600", "700", "800"],
 });
 
+// Every page depends on the request (identity, test tools), so nothing is prerendered at build time,
+// where the runtime configuration does not exist.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Père Noël secret",
   description: "Le Père Noël secret de la famille",
