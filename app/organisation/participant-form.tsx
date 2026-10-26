@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import styles from "@/app/_components/card.module.css";
-import { Sheet, sheetStyles } from "@/app/_components/sheet";
+import { Sheet } from "@/app/_components/sheet";
+import sheetStyles from "@/app/_components/sheet.module.css";
 import { useAction } from "@/app/_components/use-action";
 import { addParticipantAction, removeParticipantAction, updateParticipantAction } from "@/lib/actions/admin";
 

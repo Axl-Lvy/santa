@@ -4,8 +4,6 @@ import { useEffect, useRef, type ReactNode } from "react";
 
 import styles from "./sheet.module.css";
 
-export { styles as sheetStyles };
-
 /** A bottom sheet on a native modal dialog: focus trap and Escape come with it. */
 export function Sheet({
   open,
