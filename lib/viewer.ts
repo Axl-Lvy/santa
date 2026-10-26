@@ -2,11 +2,12 @@ import "server-only";
 
 import { createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
 import { cookies, headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { touchSeen } from "./activity";
 import { getConfig } from "./config";
 import { getDb } from "./db";
+import { isDrawn } from "./event";
 import { normalizeEmail, resolveParticipant, verifyAccessJwt } from "./identity";
 import type { Participant } from "./participants";
 
@@ -61,6 +62,13 @@ export async function requireParticipant(): Promise<{ viewer: Viewer; me: Partic
   const viewer = await getViewer();
   if (!viewer?.participant) notFound();
   return { viewer, me: viewer.participant };
+}
+
+/** For pages: the viewer as a participant, sent to the scratch card until they have revealed. */
+export async function requirePageParticipant(): Promise<{ viewer: Viewer; me: Participant }> {
+  const result = await requireParticipant();
+  if (result.me.revealedAt === null && isDrawn(getDb())) redirect("/decouvrir");
+  return result;
 }
 
 /** The viewer when they are the admin; 404 otherwise. */

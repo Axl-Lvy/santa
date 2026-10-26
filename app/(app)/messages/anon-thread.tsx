@@ -8,7 +8,7 @@ import { listAnonThread } from "@/lib/anon-messages";
 import { gifteeOf } from "@/lib/assignment";
 import { getDb } from "@/lib/db";
 import { getParticipant } from "@/lib/participants";
-import { requireParticipant } from "@/lib/viewer";
+import { requirePageParticipant } from "@/lib/viewer";
 
 async function sendToGiftee(body: string) {
   "use server";
@@ -22,7 +22,7 @@ async function sendToSanta(body: string) {
 
 /** One of the two anonymous threads, seen from the viewer's side. */
 export async function AnonThread({ side }: { side: "giftee" | "santa" }) {
-  const { me } = await requireParticipant();
+  const { me } = await requirePageParticipant();
   const db = getDb();
   const gifteeId = gifteeOf(db, me.id);
   if (gifteeId === null) redirect("/messages");

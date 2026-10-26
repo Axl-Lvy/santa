@@ -3,12 +3,13 @@ import { TabTransition } from "@/app/_components/tab-transition";
 import { getDb } from "@/lib/db";
 import { listIdeasByAuthor } from "@/lib/ideas";
 import { listParticipants } from "@/lib/participants";
-import { requireParticipant } from "@/lib/viewer";
+import { AppTabBar } from "@/app/_components/app-tab-bar";
+import { requirePageParticipant } from "@/lib/viewer";
 
 import { IdeasPanel } from "./idea-sheet";
 
 export default async function Idees() {
-  const { me } = await requireParticipant();
+  const { me } = await requirePageParticipant();
   const db = getDb();
   const people = listParticipants(db)
     .filter((p) => p.id !== me.id)
@@ -20,12 +21,15 @@ export default async function Idees() {
   }));
 
   return (
-    <TabTransition>
-      <main className={styles.page}>
-        <h1 className={styles.title}>Souffler une idée</h1>
-        <p className={styles.sub}>Pour qui as-tu une idée ?</p>
-        <IdeasPanel people={people} mine={mine} />
-      </main>
-    </TabTransition>
+    <>
+      <TabTransition>
+        <main className={styles.page}>
+          <h1 className={styles.title}>Souffler une idée</h1>
+          <p className={styles.sub}>Pour qui as-tu une idée ?</p>
+          <IdeasPanel people={people} mine={mine} />
+        </main>
+      </TabTransition>
+      <AppTabBar me={me} />
+    </>
   );
 }

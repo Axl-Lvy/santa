@@ -5,11 +5,12 @@ import styles from "@/app/_components/card.module.css";
 import { WishCard } from "@/app/_components/wish-card";
 import { getDb } from "@/lib/db";
 import { getParticipant } from "@/lib/participants";
-import { requireParticipant } from "@/lib/viewer";
+import { AppTabBar } from "@/app/_components/app-tab-bar";
+import { requirePageParticipant } from "@/lib/viewer";
 import { listWishes } from "@/lib/wishes";
 
 export default async function SomeoneWishes({ params }: PageProps<"/envies/[participantId]">) {
-  const { me } = await requireParticipant();
+  const { me } = await requirePageParticipant();
   const id = Number((await params).participantId);
   const db = getDb();
   const person = Number.isInteger(id) ? getParticipant(db, id) : null;
@@ -17,17 +18,20 @@ export default async function SomeoneWishes({ params }: PageProps<"/envies/[part
   const wishes = listWishes(db, person.id);
 
   return (
-    <main className={styles.page}>
-      <Link href="/envies" className={styles.back}>
-        ‹ Envies
-      </Link>
-      <h1 className={styles.title}>Les envies de {person.firstName}</h1>
-      {wishes.map((w) => (
-        <WishCard key={w.id} wish={w} />
-      ))}
-      {wishes.length === 0 ? (
-        <p className={styles.sub}>{person.firstName} n&apos;a pas encore écrit d&apos;envie.</p>
-      ) : null}
-    </main>
+    <>
+      <main className={styles.page}>
+        <Link href="/envies" className={styles.back}>
+          ‹ Envies
+        </Link>
+        <h1 className={styles.title}>Les envies de {person.firstName}</h1>
+        {wishes.map((w) => (
+          <WishCard key={w.id} wish={w} />
+        ))}
+        {wishes.length === 0 ? (
+          <p className={styles.sub}>{person.firstName} n&apos;a pas encore écrit d&apos;envie.</p>
+        ) : null}
+      </main>
+      <AppTabBar me={me} />
+    </>
   );
 }

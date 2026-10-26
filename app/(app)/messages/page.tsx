@@ -9,7 +9,8 @@ import { getDb } from "@/lib/db";
 import { getParticipant } from "@/lib/participants";
 import { listGroupMessages } from "@/lib/group-messages";
 import { unreadCounts } from "@/lib/unread";
-import { requireParticipant } from "@/lib/viewer";
+import { AppTabBar } from "@/app/_components/app-tab-bar";
+import { requirePageParticipant } from "@/lib/viewer";
 
 function Conversation({
   href,
@@ -46,7 +47,7 @@ function Conversation({
 }
 
 export default async function Messages() {
-  const { me } = await requireParticipant();
+  const { me } = await requirePageParticipant();
   const db = getDb();
   const unread = unreadCounts(db, me);
   const last = listGroupMessages(db, 1)[0];
@@ -56,53 +57,56 @@ export default async function Messages() {
   const lastToGiftee = giftee ? listAnonThread(db, giftee.id).at(-1) : undefined;
 
   return (
-    <TabTransition>
-      <main className={styles.page}>
-        <h1 className={styles.title}>Messages</h1>
-        {giftee ? (
-          <>
-            <Conversation
-              href="/messages/pere-noel"
-              role="Ton Père Noël secret"
-              name="Quelqu'un qui te gâte"
-              preview={
-                lastFromSanta
-                  ? `${lastFromSanta.direction === "from_giftee" ? "Toi : " : ""}${lastFromSanta.body}`
-                  : "Écris-lui quand tu veux"
-              }
-              avatar="🎅"
-              avatarStyle={{ background: "var(--brick)", color: "#fff" }}
-              unread={unread.santa}
-            />
-            <Conversation
-              href="/messages/mission"
-              role="Ta mission"
-              name={giftee.firstName}
-              preview={
-                lastToGiftee
-                  ? `${lastToGiftee.direction === "from_santa" ? "Toi : " : ""}${lastToGiftee.body}`
-                  : "Tu écris en secret"
-              }
-              avatar="🤫"
-              avatarStyle={{ background: "var(--fir)", color: "var(--gold-light)" }}
-              unread={unread.giftee}
-            />
-          </>
-        ) : null}
-        <Conversation
-          href="/messages/famille"
-          role="Tout le monde"
-          name="Discussion de famille"
-          preview={
-            last
-              ? `${last.authorId === me.id ? "Toi" : last.authorName} : ${last.body}`
-              : "Personne n'a encore écrit"
-          }
-          avatar="👨‍👩‍👧"
-          avatarStyle={{ background: "var(--gold)", color: "var(--fir)" }}
-          unread={unread.group}
-        />
-      </main>
-    </TabTransition>
+    <>
+      <TabTransition>
+        <main className={styles.page}>
+          <h1 className={styles.title}>Messages</h1>
+          {giftee ? (
+            <>
+              <Conversation
+                href="/messages/pere-noel"
+                role="Ton Père Noël secret"
+                name="Quelqu'un qui te gâte"
+                preview={
+                  lastFromSanta
+                    ? `${lastFromSanta.direction === "from_giftee" ? "Toi : " : ""}${lastFromSanta.body}`
+                    : "Écris-lui quand tu veux"
+                }
+                avatar="🎅"
+                avatarStyle={{ background: "var(--brick)", color: "#fff" }}
+                unread={unread.santa}
+              />
+              <Conversation
+                href="/messages/mission"
+                role="Ta mission"
+                name={giftee.firstName}
+                preview={
+                  lastToGiftee
+                    ? `${lastToGiftee.direction === "from_santa" ? "Toi : " : ""}${lastToGiftee.body}`
+                    : "Tu écris en secret"
+                }
+                avatar="🤫"
+                avatarStyle={{ background: "var(--fir)", color: "var(--gold-light)" }}
+                unread={unread.giftee}
+              />
+            </>
+          ) : null}
+          <Conversation
+            href="/messages/famille"
+            role="Tout le monde"
+            name="Discussion de famille"
+            preview={
+              last
+                ? `${last.authorId === me.id ? "Toi" : last.authorName} : ${last.body}`
+                : "Personne n'a encore écrit"
+            }
+            avatar="👨‍👩‍👧"
+            avatarStyle={{ background: "var(--gold)", color: "var(--fir)" }}
+            unread={unread.group}
+          />
+        </main>
+      </TabTransition>
+      <AppTabBar me={me} />
+    </>
   );
 }

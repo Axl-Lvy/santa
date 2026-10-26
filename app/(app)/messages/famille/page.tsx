@@ -4,10 +4,10 @@ import { markRead } from "@/lib/activity";
 import { sendGroupMessageAction } from "@/lib/actions/messages";
 import { getDb } from "@/lib/db";
 import { listGroupMessages } from "@/lib/group-messages";
-import { requireParticipant } from "@/lib/viewer";
+import { requirePageParticipant } from "@/lib/viewer";
 
 export default async function Famille() {
-  const { me } = await requireParticipant();
+  const { me } = await requirePageParticipant();
   const db = getDb();
   const messages = listGroupMessages(db);
   markRead(db, me.id, "group");
