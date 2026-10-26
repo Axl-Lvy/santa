@@ -83,7 +83,6 @@ export function MyWishes({ wishes }: { wishes: Wish[] }) {
               id="w-title"
               className={sheetStyles.field}
               value={draft.title}
-              maxLength={200}
               onChange={(e) => setDraft({ ...draft, title: e.target.value })}
             />
             <label className={sheetStyles.label} htmlFor="w-detail">
@@ -94,7 +93,6 @@ export function MyWishes({ wishes }: { wishes: Wish[] }) {
               className={sheetStyles.field}
               placeholder="Taille, couleur, marque…"
               value={draft.detail}
-              maxLength={500}
               onChange={(e) => setDraft({ ...draft, detail: e.target.value })}
             />
             <label className={sheetStyles.label} htmlFor="w-url">

@@ -93,7 +93,6 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
               id="idea-body"
               className={`${sheetStyles.field} ${ui.textarea}`}
               value={draft.body}
-              maxLength={500}
               placeholder="Il parle tout le temps de…"
               onChange={(e) => setDraft({ ...draft, body: e.target.value })}
             />

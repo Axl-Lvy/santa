@@ -49,7 +49,11 @@ export async function AnonThread({ side }: { side: "giftee" | "santa" }) {
         }))}
         empty={`Écris le premier message à ${giftee.firstName}, en secret.`}
         composer={
-          <ChatComposer placeholder={`Écrire à ${giftee.firstName}…`} onSend={sendToGiftee} />
+          <ChatComposer
+            storageKey="mission"
+            placeholder={`Écrire à ${giftee.firstName}…`}
+            onSend={sendToGiftee}
+          />
         }
       />
     );
@@ -73,7 +77,13 @@ export async function AnonThread({ side }: { side: "giftee" | "santa" }) {
         createdAt: m.createdAt,
       }))}
       empty="Ton Père Noël secret ne t'a pas encore écrit. Tu peux lui écrire le premier !"
-      composer={<ChatComposer placeholder="Répondre à ton Père Noël…" onSend={sendToSanta} />}
+      composer={
+        <ChatComposer
+          storageKey="pere-noel"
+          placeholder="Répondre à ton Père Noël…"
+          onSend={sendToSanta}
+        />
+      }
     />
   );
 }

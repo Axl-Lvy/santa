@@ -4,7 +4,10 @@ import styles from "@/app/_components/card.module.css";
 
 export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
-    <main className={styles.page} style={{ minHeight: "100dvh", justifyContent: "center", textAlign: "center" }}>
+    <main
+      className={styles.page}
+      style={{ minHeight: "100dvh", justifyContent: "center", textAlign: "center" }}
+    >
       <div style={{ fontSize: 48 }} aria-hidden>
         🎄
       </div>

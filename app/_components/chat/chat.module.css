@@ -201,3 +201,10 @@
 .outbox:empty {
   display: none;
 }
+
+.failedReason {
+  max-width: 80%;
+  font-size: 12px;
+  color: var(--brick);
+  text-align: right;
+}

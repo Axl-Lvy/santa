@@ -26,7 +26,13 @@ export default async function Famille() {
         createdAt: m.createdAt,
       }))}
       empty="Personne n'a encore écrit. Lance la conversation !"
-      composer={<ChatComposer placeholder="Écrire à la famille…" onSend={sendGroupMessageAction} />}
+      composer={
+        <ChatComposer
+          storageKey="famille"
+          placeholder="Écrire à la famille…"
+          onSend={sendGroupMessageAction}
+        />
+      }
     />
   );
 }
