@@ -7,7 +7,7 @@ Two sites run the same image:
 | Site | Service | Purpose |
 |---|---|---|
 | `santa.axl-lvy.fr` | `santa` | The real event. Real emails through Brevo. |
-| `dev-santa.axl-lvy.fr` | `santa-dev` | Test site. `SANTA_IMPERSONATION=on`: the admin gets the 🧪 account switcher, every page shows a « site de test » banner, emails are captured (🧪 → « Emails envoyés ») instead of sent. Its own database and data key. |
+| `dev-santa.axl-lvy.fr` | `dev-santa` | Test site. `SANTA_IMPERSONATION=on`: the admin gets the 🧪 account switcher, every page shows a « site de test » banner, emails are captured (🧪 → « Emails envoyés ») instead of sent. Its own database and data key. |
 
 Every push to `main` runs CI, publishes `ghcr.io/axl-lvy/santa:latest`, then calls the mini PC
 webhook (`/hooks/deploy-santa`), which pulls the image and recreates both services. The deploy
