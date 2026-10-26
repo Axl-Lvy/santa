@@ -18,5 +18,5 @@ const parisHourFormat = new Intl.DateTimeFormat("fr-FR", {
 
 /** The hour of `d` in Europe/Paris, 0–23. */
 export function parisHour(d: Date): number {
-  return Number(parisHourFormat.format(d));
+  return Number(parisHourFormat.formatToParts(d).find((part) => part.type === "hour")!.value);
 }

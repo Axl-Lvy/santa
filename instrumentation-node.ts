@@ -12,3 +12,6 @@ try {
   throw error;
 }
 getDb();
+
+const { startDigestScheduler } = await import("@/lib/mail/digest");
+startDigestScheduler();
