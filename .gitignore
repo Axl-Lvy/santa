@@ -1,0 +1,31 @@
+.superpowers/
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+/playwright-report/
+/test-results/
+
+# next.js
+/.next/
+/out/
+/build
+
+# local data
+/data/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# env files: only the example and the secret-free dev defaults are committed
+.env*
+!.env.example
+!.env.development
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
