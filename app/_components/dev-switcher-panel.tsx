@@ -37,6 +37,16 @@ export function DevSwitcherPanel({
       {open ? (
         <div className={styles.panel} role="dialog" aria-label="Changer de compte (test)">
           <p className={styles.title}>Test : être quelqu&apos;un d&apos;autre</p>
+          {people.some((p) => p.email === adminEmail) ? null : (
+            <a
+              href={switchHref(adminEmail)}
+              className={styles.person}
+              aria-current={current === adminEmail}
+            >
+              <span>Moi 👑</span>
+              <span className={styles.meta}>{adminEmail}</span>
+            </a>
+          )}
           {people.map((p) => (
             <a
               key={p.email}
@@ -66,7 +76,10 @@ export function DevSwitcherPanel({
             <button type="submit">OK</button>
           </form>
           <div className={styles.links}>
-            <a className={styles.link} href="/organisation">
+            <a
+              className={styles.link}
+              href={`/api/dev/as?email=${encodeURIComponent(adminEmail)}&next=/organisation`}
+            >
               Organisation
             </a>
             <a className={styles.link} href="/api/dev/outbox" target="_blank" rel="noreferrer">
