@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { DEV_AS_COOKIE, getViewer } from "@/lib/viewer";
 
@@ -11,12 +11,15 @@ export async function GET(request: NextRequest): Promise<Response> {
   const email = request.nextUrl.searchParams.get("email")?.trim().toLowerCase() ?? "";
   const next = request.nextUrl.searchParams.get("next") ?? "/";
   const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/";
-  const response = NextResponse.redirect(new URL(safeNext, request.url));
-  response.cookies.set(DEV_AS_COOKIE, email, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: request.nextUrl.protocol === "https:",
-  });
-  return response;
+  const https =
+    request.headers.get("x-forwarded-proto") === "https" || request.nextUrl.protocol === "https:";
+  const cookie = [
+    `${DEV_AS_COOKIE}=${encodeURIComponent(email)}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    ...(https ? ["Secure"] : []),
+  ].join("; ");
+  // Relative on purpose: behind the tunnel the server only knows its bind address (0.0.0.0:3000).
+  return new Response(null, { status: 307, headers: { Location: safeNext, "Set-Cookie": cookie } });
 }
