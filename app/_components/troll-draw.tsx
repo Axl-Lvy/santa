@@ -8,7 +8,7 @@ import { TrollReveal, type TrollPerson } from "./troll-reveal";
 type Props = {
   people: TrollPerson[];
   onPick: (title: string, forPerson: TrollPerson) => void;
-  /** `page` = chip on Envies / Idées; `inline` = link inside the sheet. */
+  /** `page` = banner on Idées; `inline` = link inside the sheet. */
   variant?: "page" | "inline";
 };
 

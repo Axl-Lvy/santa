@@ -17,7 +17,7 @@ Mails: no SMTP → in-memory outbox. 🧪 switcher → « Emails envoyés » or 
 
 ## Troll gift inspiration
 
-On **Envies** and **Idées**: chip **Trouver une idée cadeau**.
+On **Idées**: banner **Trouver une idée cadeau**.
 
 Flow (client-only, no server):
 
