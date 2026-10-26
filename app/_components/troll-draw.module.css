@@ -1,0 +1,36 @@
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 2px 0 4px;
+}
+
+.start {
+  align-self: flex-start;
+  border: 0;
+  background: transparent;
+  color: var(--brick);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 4px 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.start:hover {
+  opacity: 0.85;
+}
+
+.pageCta {
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--brick);
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.2;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}

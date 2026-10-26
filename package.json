@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "playground": "tsx --env-file=.env.development scripts/playground-seed.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
@@ -36,6 +37,7 @@
     "eslint-config-next": "16.4.3",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.5"
   },

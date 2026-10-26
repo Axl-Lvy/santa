@@ -5,6 +5,8 @@ import { useOptimistic, useState, startTransition } from "react";
 import styles from "@/app/_components/card.module.css";
 import { Sheet } from "@/app/_components/sheet";
 import sheetStyles from "@/app/_components/sheet.module.css";
+import { TrollDraw } from "@/app/_components/troll-draw";
+import type { TrollPerson } from "@/app/_components/troll-reveal";
 import { useAction } from "@/app/_components/use-action";
 import { WishCard } from "@/app/_components/wish-card";
 import { deleteWishAction, saveWishAction } from "@/lib/actions/wishes";
@@ -14,7 +16,7 @@ type Draft = { id: number | null; title: string; detail: string; url: string };
 
 const empty: Draft = { id: null, title: "", detail: "", url: "" };
 
-export function MyWishes({ wishes }: { wishes: Wish[] }) {
+export function MyWishes({ wishes, people }: { wishes: Wish[]; people: TrollPerson[] }) {
   const [optimistic, addOptimistic] = useOptimistic(wishes, (current: Wish[], added: Wish) => [
     ...current,
     added,
@@ -50,6 +52,11 @@ export function MyWishes({ wishes }: { wishes: Wish[] }) {
 
   return (
     <>
+      <TrollDraw
+        variant="page"
+        people={people}
+        onPick={(title) => open({ ...empty, title })}
+      />
       {optimistic.map((w) => (
         <WishCard
           key={w.id}
@@ -84,6 +91,10 @@ export function MyWishes({ wishes }: { wishes: Wish[] }) {
               className={sheetStyles.field}
               value={draft.title}
               onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            />
+            <TrollDraw
+              people={people}
+              onPick={(title) => setDraft((d) => (d ? { ...d, title } : d))}
             />
             <label className={sheetStyles.label} htmlFor="w-detail">
               Un détail ? <small>(facultatif)</small>
