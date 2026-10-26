@@ -5,21 +5,15 @@ import { getViewer } from "@/lib/viewer";
 
 import { DevSwitcherPanel } from "./dev-switcher-panel";
 
-/** Development only: a floating panel to act as any participant. Renders nothing in production. */
+/** Test tool: a floating panel to act as any participant, for whoever may switch accounts. */
 export async function DevSwitcher() {
   const config = getConfig();
-  if (config.production || !config.devIdentityEmail) return null;
   const viewer = await getViewer();
+  if (!viewer?.canImpersonate) return null;
   const people = listParticipants(getDb()).map(({ firstName, email, revealedAt }) => ({
     firstName,
     email,
     revealed: revealedAt !== null,
   }));
-  return (
-    <DevSwitcherPanel
-      current={viewer?.email ?? ""}
-      people={people}
-      adminEmail={config.adminEmail}
-    />
-  );
+  return <DevSwitcherPanel current={viewer.email} people={people} adminEmail={config.adminEmail} />;
 }

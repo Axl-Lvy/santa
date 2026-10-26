@@ -32,3 +32,26 @@ export function resolveParticipant(db: Db, email: string): Participant | null {
     .get(normalizeEmail(email)) as ParticipantRow | undefined;
   return row ? toParticipant(row) : null;
 }
+
+type ImpersonationConfig = {
+  production: boolean;
+  devIdentityEmail: string | null;
+  impersonation: boolean;
+  adminEmail: string;
+};
+
+/** Whether `realEmail` may act as someone else: anyone in local dev, only the admin on a test site. */
+export function canImpersonate(realEmail: string, config: ImpersonationConfig): boolean {
+  if (!config.production && config.devIdentityEmail) return true;
+  return config.impersonation && realEmail === config.adminEmail;
+}
+
+/** The email the request acts as: the switcher cookie when allowed, else the verified one. */
+export function resolveEmail(
+  realEmail: string,
+  cookie: string | undefined,
+  config: ImpersonationConfig,
+): string {
+  const asked = cookie ? normalizeEmail(cookie) : "";
+  return asked && canImpersonate(realEmail, config) ? asked : realEmail;
+}

@@ -2,7 +2,13 @@ import { SignJWT, createLocalJWKSet, exportJWK, generateKeyPair, type JWTVerifyG
 
 import { seedParticipants, testDb } from "@/test-utils/db";
 
-import { normalizeEmail, resolveParticipant, verifyAccessJwt } from "./identity";
+import {
+  canImpersonate,
+  normalizeEmail,
+  resolveEmail,
+  resolveParticipant,
+  verifyAccessJwt,
+} from "./identity";
 
 const issuer = "https://team.cloudflareaccess.com";
 const audience = "app-aud";
@@ -73,5 +79,36 @@ describe("resolveParticipant", () => {
     const db = testDb();
     seedParticipants(db, ["Mamie"]);
     expect(resolveParticipant(db, "inconnu@test.fr")).toBeNull();
+  });
+});
+
+describe("impersonation", () => {
+  const base = {
+    production: true,
+    devIdentityEmail: null,
+    impersonation: true,
+    adminEmail: "axel@x.fr",
+  };
+
+  it("lets the admin act as someone else on an impersonation site", () => {
+    expect(canImpersonate("axel@x.fr", base)).toBe(true);
+    expect(resolveEmail("axel@x.fr", " Mamie@X.fr ", base)).toBe("mamie@x.fr");
+  });
+
+  it("ignores the cookie for anyone else, and everywhere impersonation is off", () => {
+    expect(resolveEmail("leon@x.fr", "mamie@x.fr", base)).toBe("leon@x.fr");
+    expect(resolveEmail("axel@x.fr", "mamie@x.fr", { ...base, impersonation: false })).toBe(
+      "axel@x.fr",
+    );
+  });
+
+  it("lets anyone switch in local development", () => {
+    const dev = {
+      production: false,
+      devIdentityEmail: "axel@x.fr",
+      impersonation: false,
+      adminEmail: "axel@x.fr",
+    };
+    expect(resolveEmail("axel@x.fr", "leon@x.fr", dev)).toBe("leon@x.fr");
   });
 });

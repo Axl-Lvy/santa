@@ -8,21 +8,26 @@ import { touchSeen } from "./activity";
 import { getConfig } from "./config";
 import { getDb } from "./db";
 import { isDrawn } from "./event";
-import { normalizeEmail, resolveParticipant, verifyAccessJwt } from "./identity";
+import { canImpersonate, resolveEmail, resolveParticipant, verifyAccessJwt } from "./identity";
 import type { Participant } from "./participants";
 
-export type Viewer = { email: string; isAdmin: boolean; participant: Participant | null };
+export type Viewer = {
+  /** Who the request acts as: the switcher's choice when allowed, else `realEmail`. */
+  email: string;
+  /** The identity Cloudflare Access verified (or the dev identity locally). */
+  realEmail: string;
+  canImpersonate: boolean;
+  isAdmin: boolean;
+  participant: Participant | null;
+};
 
 export const DEV_AS_COOKIE = "dev_as";
 
 let jwks: JWTVerifyGetKey | null = null;
 
-async function identifiedEmail(): Promise<string | null> {
+async function verifiedEmail(): Promise<string | null> {
   const config = getConfig();
-  if (!config.production && config.devIdentityEmail) {
-    const override = (await cookies()).get(DEV_AS_COOKIE)?.value;
-    return normalizeEmail(override || config.devIdentityEmail);
-  }
+  if (!config.production && config.devIdentityEmail) return config.devIdentityEmail;
   const token = (await headers()).get("cf-access-jwt-assertion");
   if (!token || !config.cfTeamDomain || !config.cfAud) return null;
   jwks ??= createRemoteJWKSet(new URL(`https://${config.cfTeamDomain}/cdn-cgi/access/certs`));
@@ -50,11 +55,19 @@ function noteSeen(participantId: number): void {
 
 /** The person behind this request, or null without a valid identity; records the participant's visit. */
 export async function getViewer(): Promise<Viewer | null> {
-  const email = await identifiedEmail();
-  if (!email) return null;
+  const realEmail = await verifiedEmail();
+  if (!realEmail) return null;
+  const config = getConfig();
+  const email = resolveEmail(realEmail, (await cookies()).get(DEV_AS_COOKIE)?.value, config);
   const participant = resolveParticipant(getDb(), email);
   if (participant) noteSeen(participant.id);
-  return { email, isAdmin: email === getConfig().adminEmail, participant };
+  return {
+    email,
+    realEmail,
+    canImpersonate: canImpersonate(realEmail, config),
+    isAdmin: email === config.adminEmail,
+    participant,
+  };
 }
 
 /** The viewer as a participant; 404 otherwise (the (app) layout shows the outsider page). */

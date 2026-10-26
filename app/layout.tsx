@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Nunito } from "next/font/google";
 
 import { DevSwitcher } from "./_components/dev-switcher";
+import { TestBanner } from "./_components/test-banner";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${fraunces.variable} ${nunito.variable}`}>
       <body>
+        <TestBanner />
         <div className="app-column">{children}</div>
         <DevSwitcher />
       </body>

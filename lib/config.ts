@@ -9,6 +9,8 @@ export type Config = {
   appUrl: string;
   devIdentityEmail: string | null;
   production: boolean;
+  /** Test site (dev-santa): the admin may act as anyone, mail is captured instead of sent. */
+  impersonation: boolean;
 };
 
 export class ConfigError extends Error {}
@@ -26,6 +28,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
   };
 
   const production = env.NODE_ENV === "production";
+  const impersonation = read("SANTA_IMPERSONATION") === "on";
   const devIdentity = read("DEV_IDENTITY_EMAIL");
   if (devIdentity && production) problems.push("DEV_IDENTITY_EMAIL must not be set in production");
 
@@ -42,13 +45,14 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
   const cfAud = cfRequired ? need("CF_ACCESS_AUD") : read("CF_ACCESS_AUD");
 
   let smtp: Config["smtp"] = null;
-  if (production || read("SMTP_HOST")) {
+  if ((production && !impersonation) || read("SMTP_HOST")) {
     const host = need("SMTP_HOST");
     const port = Number(need("SMTP_PORT"));
     if (!Number.isInteger(port) || port <= 0) problems.push("SMTP_PORT must be a port number");
     smtp = { host, port, user: need("SMTP_USER"), password: need("SMTP_PASSWORD") };
   }
-  const mailFrom = production ? need("MAIL_FROM") : (read("MAIL_FROM") ?? DEFAULT_MAIL_FROM);
+  const mailFrom =
+    smtp && production ? need("MAIL_FROM") : (read("MAIL_FROM") ?? DEFAULT_MAIL_FROM);
 
   if (problems.length > 0) throw new ConfigError(problems.join("; "));
   return {
@@ -62,6 +66,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     appUrl,
     devIdentityEmail: devIdentity?.toLowerCase() ?? null,
     production,
+    impersonation,
   };
 }
 

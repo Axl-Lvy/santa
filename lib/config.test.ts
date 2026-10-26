@@ -65,3 +65,24 @@ describe("loadConfig", () => {
     expect(loadConfig({ ...production, ADMIN_EMAIL: " Axel@X.fr " }).adminEmail).toBe("axel@x.fr");
   });
 });
+
+describe("impersonation mode (dev-santa)", () => {
+  it("runs in production without SMTP, capturing mail instead", () => {
+    const env = {
+      ...production,
+      SANTA_IMPERSONATION: "on",
+      SMTP_HOST: undefined,
+      SMTP_PORT: undefined,
+      SMTP_USER: undefined,
+      SMTP_PASSWORD: undefined,
+      MAIL_FROM: undefined,
+    };
+    const c = loadConfig(env as NodeJS.ProcessEnv);
+    expect(c.impersonation).toBe(true);
+    expect(c.smtp).toBeNull();
+  });
+
+  it("is off unless asked for", () => {
+    expect(loadConfig(production).impersonation).toBe(false);
+  });
+});
