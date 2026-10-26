@@ -12,8 +12,11 @@ export function notifyGroup(db: Db): void {
   for (const id of everyone(db)) publish(id, "group");
 }
 
-export function notifyWishlistChanged(db: Db): void {
-  for (const id of everyone(db)) publish(id, "wishlist");
+/** A wishlist is seen only by its owner and, after the draw, their Santa. */
+export function notifyWishlistChanged(db: Db, ownerId: number): void {
+  publish(ownerId, "wishlist");
+  const santa = santaOf(db, ownerId);
+  if (santa !== null) publish(santa, "wishlist");
 }
 
 export function notifyAll(db: Db, kind: LiveKind): void {

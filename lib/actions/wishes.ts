@@ -16,7 +16,7 @@ export async function saveWishAction(
   const result = await attempt(() =>
     id === null ? addWish(getDb(), me.id, input) : updateWish(getDb(), me.id, id, input),
   );
-  if (result.ok) notifyWishlistChanged(getDb());
+  if (result.ok) notifyWishlistChanged(getDb(), me.id);
   revalidatePath("/", "layout");
   return result;
 }
@@ -24,7 +24,7 @@ export async function saveWishAction(
 export async function deleteWishAction(id: number): Promise<ActionResult> {
   const { me } = await requireParticipant();
   const result = await attempt(() => deleteWish(getDb(), me.id, id));
-  if (result.ok) notifyWishlistChanged(getDb());
+  if (result.ok) notifyWishlistChanged(getDb(), me.id);
   revalidatePath("/", "layout");
   return result;
 }

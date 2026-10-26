@@ -9,7 +9,7 @@ function pages(dir: string): string[] {
   });
 }
 
-describe("privacy rule 5: routes are relative to the viewer", () => {
+describe("privacy rule 5: routes are relative to the viewer, and nobody can open someone else's wishlist", () => {
   it("serves exactly the reviewed pages", () => {
     const routes = pages("app")
       .map((p) =>
@@ -25,7 +25,6 @@ describe("privacy rule 5: routes are relative to the viewer", () => {
         "/",
         "/decouvrir",
         "/envies",
-        "/envies/[participantId]",
         "/idees",
         "/messages",
         "/messages/famille",
