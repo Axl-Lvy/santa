@@ -9,11 +9,21 @@ import { sendMail, type Mail } from "./transport";
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function mailFor(db: Db, p: Participant): Mail {
-  return { to: p.email, ...drawEmail({ firstName: p.firstName, budgetEur: getEvent(db).budgetEur, appUrl: getConfig().appUrl }) };
+  return {
+    to: p.email,
+    ...drawEmail({
+      firstName: p.firstName,
+      budgetEur: getEvent(db).budgetEur,
+      appUrl: getConfig().appUrl,
+    }),
+  };
 }
 
 function markSent(db: Db, id: number): void {
-  db.prepare("UPDATE participant SET draw_email_sent_at = ? WHERE id = ?").run(now().toISOString(), id);
+  db.prepare("UPDATE participant SET draw_email_sent_at = ? WHERE id = ?").run(
+    now().toISOString(),
+    id,
+  );
 }
 
 /** Mails everyone not mailed yet, retrying after each delay in `delays`. */
@@ -30,14 +40,20 @@ export async function sendDrawEmails(
         markSent(db, p.id);
         break;
       } catch (error) {
-        console.error(`santa: draw email failed: ${error instanceof Error ? error.name : "unknown"}`);
+        console.error(
+          `santa: draw email failed: ${error instanceof Error ? error.name : "unknown"}`,
+        );
       }
     }
   }
 }
 
 /** Sends one person's draw email again; throws when it fails. */
-export async function resendDrawEmail(db: Db, id: number, send: (m: Mail) => Promise<void> = sendMail): Promise<void> {
+export async function resendDrawEmail(
+  db: Db,
+  id: number,
+  send: (m: Mail) => Promise<void> = sendMail,
+): Promise<void> {
   const p = getParticipant(db, id);
   if (!p) return;
   await send(mailFor(db, p));

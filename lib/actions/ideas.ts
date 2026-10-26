@@ -8,7 +8,11 @@ import { notifyIdea } from "../notify";
 import { requireParticipant } from "../viewer";
 import { attempt, type ActionResult } from "./result";
 
-export async function saveIdeaAction(id: number | null, targetId: number, body: string): Promise<ActionResult> {
+export async function saveIdeaAction(
+  id: number | null,
+  targetId: number,
+  body: string,
+): Promise<ActionResult> {
   const { me } = await requireParticipant();
   const db = getDb();
   const result = await attempt(() => {

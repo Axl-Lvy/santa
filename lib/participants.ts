@@ -36,18 +36,22 @@ const collator = new Intl.Collator("fr", { sensitivity: "base" });
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function listParticipants(db: Db): Participant[] {
-  const rows = db.prepare(`SELECT ${PARTICIPANT_COLUMNS} FROM participant`).all() as ParticipantRow[];
+  const rows = db
+    .prepare(`SELECT ${PARTICIPANT_COLUMNS} FROM participant`)
+    .all() as ParticipantRow[];
   return rows.map(toParticipant).sort((a, b) => collator.compare(a.firstName, b.firstName));
 }
 
 export function getParticipant(db: Db, id: number): Participant | null {
   const row = db.prepare(`SELECT ${PARTICIPANT_COLUMNS} FROM participant WHERE id = ?`).get(id) as
-    | ParticipantRow
-    | undefined;
+    ParticipantRow | undefined;
   return row ? toParticipant(row) : null;
 }
 
-function validated(input: { firstName: string; email: string }): { firstName: string; email: string } {
+function validated(input: { firstName: string; email: string }): {
+  firstName: string;
+  email: string;
+} {
   const firstName = input.firstName.trim();
   const email = normalizeEmail(input.email);
   if (firstName.length < 1 || firstName.length > 40) {
@@ -58,7 +62,10 @@ function validated(input: { firstName: string; email: string }): { firstName: st
 }
 
 function emailTaken(db: Db, email: string, exceptId: number | null): boolean {
-  return db.prepare("SELECT 1 FROM participant WHERE email = ? AND id IS NOT ?").get(email, exceptId) !== undefined;
+  return (
+    db.prepare("SELECT 1 FROM participant WHERE email = ? AND id IS NOT ?").get(email, exceptId) !==
+    undefined
+  );
 }
 
 export function addParticipant(db: Db, input: { firstName: string; email: string }): Participant {
@@ -67,19 +74,28 @@ export function addParticipant(db: Db, input: { firstName: string; email: string
     const { firstName, email } = validated(input);
     if (emailTaken(db, email, null)) throw new DuplicateEmailError();
     const id = Number(
-      db.prepare("INSERT INTO participant (first_name, email) VALUES (?, ?)").run(firstName, email).lastInsertRowid,
+      db.prepare("INSERT INTO participant (first_name, email) VALUES (?, ?)").run(firstName, email)
+        .lastInsertRowid,
     );
     return getParticipant(db, id)!;
   });
 }
 
 /** Renames a participant or fixes their email; allowed after the draw. */
-export function updateParticipant(db: Db, id: number, input: { firstName: string; email: string }): Participant {
+export function updateParticipant(
+  db: Db,
+  id: number,
+  input: { firstName: string; email: string },
+): Participant {
   return tx(db, () => {
     const { firstName, email } = validated(input);
     if (!getParticipant(db, id)) throw new ValidationError("Cette personne n'existe pas.");
     if (emailTaken(db, email, id)) throw new DuplicateEmailError();
-    db.prepare("UPDATE participant SET first_name = ?, email = ? WHERE id = ?").run(firstName, email, id);
+    db.prepare("UPDATE participant SET first_name = ?, email = ? WHERE id = ?").run(
+      firstName,
+      email,
+      id,
+    );
     return getParticipant(db, id)!;
   });
 }

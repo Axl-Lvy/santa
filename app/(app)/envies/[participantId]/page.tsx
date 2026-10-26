@@ -25,7 +25,9 @@ export default async function SomeoneWishes({ params }: PageProps<"/envies/[part
       {wishes.map((w) => (
         <WishCard key={w.id} wish={w} />
       ))}
-      {wishes.length === 0 ? <p className={styles.sub}>{person.firstName} n&apos;a pas encore écrit d&apos;envie.</p> : null}
+      {wishes.length === 0 ? (
+        <p className={styles.sub}>{person.firstName} n&apos;a pas encore écrit d&apos;envie.</p>
+      ) : null}
     </main>
   );
 }

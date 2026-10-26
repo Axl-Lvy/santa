@@ -17,7 +17,12 @@ export type AnonMessage = {
 };
 
 /** Sends to the viewer's giftee (as their Santa) or to the viewer's Santa (as their giftee). */
-export function postAnon(db: Db, sender: Participant, to: "giftee" | "santa", body: string): AnonMessage {
+export function postAnon(
+  db: Db,
+  sender: Participant,
+  to: "giftee" | "santa",
+  body: string,
+): AnonMessage {
   const giftee = gifteeOf(db, sender.id);
   if (giftee === null) throw new ValidationError("Le tirage n'a pas encore eu lieu.");
   const message: AnonMessage = {
@@ -28,13 +33,19 @@ export function postAnon(db: Db, sender: Participant, to: "giftee" | "santa", bo
     createdAt: now().toISOString(),
   };
   const { id, ...payload } = message;
-  db.prepare("INSERT INTO anon_message (id, payload_enc) VALUES (?, ?)").run(id, box().seal(payload));
+  db.prepare("INSERT INTO anon_message (id, payload_enc) VALUES (?, ?)").run(
+    id,
+    box().seal(payload),
+  );
   return message;
 }
 
 /** Every message between `gifteeId` and their Santa, oldest first; decrypts all rows in memory. */
 export function listAnonThread(db: Db, gifteeId: number): AnonMessage[] {
-  const rows = db.prepare("SELECT id, payload_enc FROM anon_message").all() as { id: string; payload_enc: string }[];
+  const rows = db.prepare("SELECT id, payload_enc FROM anon_message").all() as {
+    id: string;
+    payload_enc: string;
+  }[];
   return rows
     .map((r) => ({ id: r.id, ...box().open<Omit<AnonMessage, "id">>(r.payload_enc) }))
     .filter((m) => m.gifteeId === gifteeId)

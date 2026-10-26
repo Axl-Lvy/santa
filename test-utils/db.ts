@@ -6,7 +6,10 @@ export function testDb(): Db {
 }
 
 /** Inserts participants named `names`, with emails `<name>@test.fr`. */
-export function seedParticipants(db: Db, names: string[]): { id: number; firstName: string; email: string }[] {
+export function seedParticipants(
+  db: Db,
+  names: string[],
+): { id: number; firstName: string; email: string }[] {
   const insert = db.prepare("INSERT INTO participant (first_name, email) VALUES (?, ?)");
   return names.map((firstName) => {
     const email = `${firstName.toLowerCase()}@test.fr`;

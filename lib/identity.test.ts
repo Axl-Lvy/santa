@@ -16,7 +16,10 @@ beforeAll(async () => {
   jwks = createLocalJWKSet({ keys: [jwk] });
 });
 
-function token(claims: Record<string, unknown>, opts: { aud?: string; iss?: string; exp?: string; key?: CryptoKey } = {}) {
+function token(
+  claims: Record<string, unknown>,
+  opts: { aud?: string; iss?: string; exp?: string; key?: CryptoKey } = {},
+) {
   return new SignJWT(claims)
     .setProtectedHeader({ alg: "RS256", kid: "k1" })
     .setIssuer(opts.iss ?? issuer)
@@ -38,7 +41,9 @@ describe("verifyAccessJwt", () => {
   });
 
   it("rejects another issuer", async () => {
-    await expect(verify(await token({ email: "a@b.fr" }, { iss: "https://evil.example" }))).rejects.toThrow();
+    await expect(
+      verify(await token({ email: "a@b.fr" }, { iss: "https://evil.example" })),
+    ).rejects.toThrow();
   });
 
   it("rejects an expired token", async () => {
@@ -47,7 +52,9 @@ describe("verifyAccessJwt", () => {
 
   it("rejects a token signed by another key", async () => {
     const other = await generateKeyPair("RS256");
-    await expect(verify(await token({ email: "a@b.fr" }, { key: other.privateKey }))).rejects.toThrow();
+    await expect(
+      verify(await token({ email: "a@b.fr" }, { key: other.privateKey })),
+    ).rejects.toThrow();
   });
 
   it("rejects a token without an email", async () => {

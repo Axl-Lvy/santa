@@ -21,13 +21,20 @@ describe("loadConfig", () => {
   it("accepts a complete production env", () => {
     const c = loadConfig(production);
     expect(c.production).toBe(true);
-    expect(c.smtp).toEqual({ host: "smtp-relay.brevo.com", port: 587, user: "u@smtp-brevo.com", password: "p" });
+    expect(c.smtp).toEqual({
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      user: "u@smtp-brevo.com",
+      password: "p",
+    });
   });
 
   it("names every missing production variable", () => {
     const env = { ...production, SANTA_DATA_KEY: undefined, CF_ACCESS_AUD: undefined };
     expect(() => loadConfig(env)).toThrow(ConfigError);
-    expect(() => loadConfig(env)).toThrow(/SANTA_DATA_KEY[\s\S]*CF_ACCESS_AUD|CF_ACCESS_AUD[\s\S]*SANTA_DATA_KEY/);
+    expect(() => loadConfig(env)).toThrow(
+      /SANTA_DATA_KEY[\s\S]*CF_ACCESS_AUD|CF_ACCESS_AUD[\s\S]*SANTA_DATA_KEY/,
+    );
   });
 
   it("rejects a data key that is not 64 hex chars", () => {
@@ -35,7 +42,9 @@ describe("loadConfig", () => {
   });
 
   it("refuses the dev identity bypass in production", () => {
-    expect(() => loadConfig({ ...production, DEV_IDENTITY_EMAIL: "a@b.fr" })).toThrow(/DEV_IDENTITY_EMAIL/);
+    expect(() => loadConfig({ ...production, DEV_IDENTITY_EMAIL: "a@b.fr" })).toThrow(
+      /DEV_IDENTITY_EMAIL/,
+    );
   });
 
   it("allows dev without cloudflare or smtp when a dev identity is set", () => {

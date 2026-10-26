@@ -26,7 +26,11 @@ async function identifiedEmail(): Promise<string | null> {
   if (!token || !config.cfTeamDomain || !config.cfAud) return null;
   jwks ??= createRemoteJWKSet(new URL(`https://${config.cfTeamDomain}/cdn-cgi/access/certs`));
   try {
-    return await verifyAccessJwt(token, { jwks, issuer: `https://${config.cfTeamDomain}`, audience: config.cfAud });
+    return await verifyAccessJwt(token, {
+      jwks,
+      issuer: `https://${config.cfTeamDomain}`,
+      audience: config.cfAud,
+    });
   } catch {
     return null;
   }

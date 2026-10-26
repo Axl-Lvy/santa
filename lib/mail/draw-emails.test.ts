@@ -7,7 +7,11 @@ describe("sendDrawEmails", () => {
   it("retries and records the send", async () => {
     const db = testDb();
     const [a] = seedParticipants(db, ["Camille"]);
-    const send = vi.fn().mockRejectedValueOnce(new Error("x")).mockRejectedValueOnce(new Error("x")).mockResolvedValue(undefined);
+    const send = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("x"))
+      .mockRejectedValueOnce(new Error("x"))
+      .mockResolvedValue(undefined);
     await sendDrawEmails(db, send, [0, 0, 0]);
     expect(send).toHaveBeenCalledTimes(3);
     expect(getParticipant(db, a.id)!.drawEmailSentAt).not.toBeNull();

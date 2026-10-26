@@ -28,9 +28,11 @@ export default async function Organisation() {
 
   if (drawnAt) {
     const status = adminStatus(db);
-    const drawnOn = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long" }).format(
-      new Date(drawnAt),
-    );
+    const drawnOn = new Intl.DateTimeFormat("fr-FR", {
+      timeZone: "Europe/Paris",
+      day: "numeric",
+      month: "long",
+    }).format(new Date(drawnAt));
     return (
       <main className={styles.page} style={{ paddingBottom: 40 }}>
         <Link href="/" className={styles.back}>
@@ -65,11 +67,14 @@ export default async function Organisation() {
 
       <div>
         <div className={admin.check}>
-          {checks.drawPossible ? "✅ Un tirage est possible avec ces règles" : "⚠️ Aucun tirage n'est possible pour l'instant"}
+          {checks.drawPossible
+            ? "✅ Un tirage est possible avec ces règles"
+            : "⚠️ Aucun tirage n'est possible pour l'instant"}
         </div>
         {checks.mystery ? (
           <div className={`${admin.check} ${checks.mystery.warn ? admin.checkWarn : ""}`}>
-            {checks.mystery.warn ? "⚠️" : "✅"} Ton Père Noël reste un mystère ({checks.mystery.count}{" "}
+            {checks.mystery.warn ? "⚠️" : "✅"} Ton Père Noël reste un mystère (
+            {checks.mystery.count}{" "}
             {checks.mystery.count > 1 ? "personnes possibles" : "personne possible"})
           </div>
         ) : null}

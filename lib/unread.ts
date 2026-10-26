@@ -20,8 +20,14 @@ export function unreadCounts(db: Db, me: Participant): UnreadCounts {
   const ideasRead = getLastRead(db, me.id, "ideas");
   return {
     group,
-    santa: listAnonThread(db, me.id).filter((m) => m.direction === "from_santa" && after(m.createdAt, santaRead)).length,
-    giftee: listAnonThread(db, giftee).filter((m) => m.direction === "from_giftee" && after(m.createdAt, gifteeRead)).length,
-    ideas: listIdeasForTarget(db, giftee).filter((i) => i.authorId !== me.id && after(i.updatedAt, ideasRead)).length,
+    santa: listAnonThread(db, me.id).filter(
+      (m) => m.direction === "from_santa" && after(m.createdAt, santaRead),
+    ).length,
+    giftee: listAnonThread(db, giftee).filter(
+      (m) => m.direction === "from_giftee" && after(m.createdAt, gifteeRead),
+    ).length,
+    ideas: listIdeasForTarget(db, giftee).filter(
+      (i) => i.authorId !== me.id && after(i.updatedAt, ideasRead),
+    ).length,
   };
 }

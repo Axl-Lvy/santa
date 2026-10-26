@@ -20,7 +20,10 @@ export async function sendGroupMessageAction(body: string): Promise<ActionResult
   return result;
 }
 
-export async function sendAnonMessageAction(to: "giftee" | "santa", body: string): Promise<ActionResult> {
+export async function sendAnonMessageAction(
+  to: "giftee" | "santa",
+  body: string,
+): Promise<ActionResult> {
   const { me } = await requireParticipant();
   const db = getDb();
   const result = await attempt(() => postAnon(db, me, to, body));

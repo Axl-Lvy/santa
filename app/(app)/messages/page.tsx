@@ -57,42 +57,52 @@ export default async function Messages() {
 
   return (
     <TabTransition>
-    <main className={styles.page}>
-      <h1 className={styles.title}>Messages</h1>
-      {giftee ? (
-        <>
-          <Conversation
-            href="/messages/pere-noel"
-            role="Ton Père Noël secret"
-            name="Quelqu'un qui te gâte"
-            preview={
-              lastFromSanta ? `${lastFromSanta.direction === "from_giftee" ? "Toi : " : ""}${lastFromSanta.body}` : "Écris-lui quand tu veux"
-            }
-            avatar="🎅"
-            avatarStyle={{ background: "var(--brick)", color: "#fff" }}
-            unread={unread.santa}
-          />
-          <Conversation
-            href="/messages/mission"
-            role="Ta mission"
-            name={giftee.firstName}
-            preview={lastToGiftee ? `${lastToGiftee.direction === "from_santa" ? "Toi : " : ""}${lastToGiftee.body}` : "Tu écris en secret"}
-            avatar="🤫"
-            avatarStyle={{ background: "var(--fir)", color: "var(--gold-light)" }}
-            unread={unread.giftee}
-          />
-        </>
-      ) : null}
-      <Conversation
-        href="/messages/famille"
-        role="Tout le monde"
-        name="Discussion de famille"
-        preview={last ? `${last.authorId === me.id ? "Toi" : last.authorName} : ${last.body}` : "Personne n'a encore écrit"}
-        avatar="👨‍👩‍👧"
-        avatarStyle={{ background: "var(--gold)", color: "var(--fir)" }}
-        unread={unread.group}
-      />
-    </main>
+      <main className={styles.page}>
+        <h1 className={styles.title}>Messages</h1>
+        {giftee ? (
+          <>
+            <Conversation
+              href="/messages/pere-noel"
+              role="Ton Père Noël secret"
+              name="Quelqu'un qui te gâte"
+              preview={
+                lastFromSanta
+                  ? `${lastFromSanta.direction === "from_giftee" ? "Toi : " : ""}${lastFromSanta.body}`
+                  : "Écris-lui quand tu veux"
+              }
+              avatar="🎅"
+              avatarStyle={{ background: "var(--brick)", color: "#fff" }}
+              unread={unread.santa}
+            />
+            <Conversation
+              href="/messages/mission"
+              role="Ta mission"
+              name={giftee.firstName}
+              preview={
+                lastToGiftee
+                  ? `${lastToGiftee.direction === "from_santa" ? "Toi : " : ""}${lastToGiftee.body}`
+                  : "Tu écris en secret"
+              }
+              avatar="🤫"
+              avatarStyle={{ background: "var(--fir)", color: "var(--gold-light)" }}
+              unread={unread.giftee}
+            />
+          </>
+        ) : null}
+        <Conversation
+          href="/messages/famille"
+          role="Tout le monde"
+          name="Discussion de famille"
+          preview={
+            last
+              ? `${last.authorId === me.id ? "Toi" : last.authorName} : ${last.body}`
+              : "Personne n'a encore écrit"
+          }
+          avatar="👨‍👩‍👧"
+          avatarStyle={{ background: "var(--gold)", color: "var(--fir)" }}
+          unread={unread.group}
+        />
+      </main>
     </TabTransition>
   );
 }

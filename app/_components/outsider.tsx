@@ -2,7 +2,10 @@ import styles from "./card.module.css";
 
 export function Outsider({ email }: { email: string }) {
   return (
-    <main className={styles.page} style={{ minHeight: "100dvh", justifyContent: "center", textAlign: "center" }}>
+    <main
+      className={styles.page}
+      style={{ minHeight: "100dvh", justifyContent: "center", textAlign: "center" }}
+    >
       <div style={{ fontSize: 48 }} aria-hidden>
         🎄
       </div>

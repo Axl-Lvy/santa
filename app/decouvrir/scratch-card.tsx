@@ -119,7 +119,11 @@ export function ScratchCard({ gifteeName }: { gifteeName: string }) {
       {revealed ? (
         <div className={styles.after}>
           <p style={{ margin: 0 }}>🤫 C&apos;est un secret, ne le dis à personne !</p>
-          <Link href="/mission" className={`${cardStyles.button}`} style={{ width: "auto", padding: "14px 22px" }}>
+          <Link
+            href="/mission"
+            className={`${cardStyles.button}`}
+            style={{ width: "auto", padding: "14px 22px" }}
+          >
             Voir ses envies →
           </Link>
         </div>

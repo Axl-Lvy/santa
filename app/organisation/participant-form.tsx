@@ -6,7 +6,11 @@ import styles from "@/app/_components/card.module.css";
 import { Sheet } from "@/app/_components/sheet";
 import sheetStyles from "@/app/_components/sheet.module.css";
 import { useAction } from "@/app/_components/use-action";
-import { addParticipantAction, removeParticipantAction, updateParticipantAction } from "@/lib/actions/admin";
+import {
+  addParticipantAction,
+  removeParticipantAction,
+  updateParticipantAction,
+} from "@/lib/actions/admin";
 
 import admin from "./organisation.module.css";
 
@@ -62,20 +66,37 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
               <span>{p.email}</span>
             </button>
             {locked ? null : (
-              <button type="button" className={admin.icon} onClick={() => setRemoving(p)} aria-label={`Retirer ${p.firstName}`}>
+              <button
+                type="button"
+                className={admin.icon}
+                onClick={() => setRemoving(p)}
+                aria-label={`Retirer ${p.firstName}`}
+              >
                 🗑
               </button>
             )}
           </div>
         ))}
-        {people.length === 0 ? <p className={admin.hint}>Personne pour l&apos;instant. Commence par toi !</p> : null}
+        {people.length === 0 ? (
+          <p className={admin.hint}>Personne pour l&apos;instant. Commence par toi !</p>
+        ) : null}
       </div>
 
-      <Sheet open={editing !== null} onClose={close} title={editing === "new" ? "Ajouter quelqu'un" : "Modifier"}>
+      <Sheet
+        open={editing !== null}
+        onClose={close}
+        title={editing === "new" ? "Ajouter quelqu'un" : "Modifier"}
+      >
         <label className={sheetStyles.label} htmlFor="p-first">
           Prénom
         </label>
-        <input id="p-first" className={sheetStyles.field} value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="off" />
+        <input
+          id="p-first"
+          className={sheetStyles.field}
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          autoComplete="off"
+        />
         <label className={sheetStyles.label} htmlFor="p-email">
           Email
         </label>
@@ -88,7 +109,9 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <p className={admin.hint}>Pense aussi à lui donner accès dans cf-admin (groupe secretsanta-users).</p>
+        <p className={admin.hint}>
+          Pense aussi à lui donner accès dans cf-admin (groupe secretsanta-users).
+        </p>
         {confirmEdit && editing !== "new" && editing !== null ? (
           <p className={styles.error}>Modifier {editing.firstName} ? Le tirage ne change pas.</p>
         ) : null}
@@ -98,18 +121,32 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
         </button>
       </Sheet>
 
-      <Sheet open={removing !== null} onClose={() => setRemoving(null)} title={`Retirer ${removing?.firstName ?? ""} ?`}>
+      <Sheet
+        open={removing !== null}
+        onClose={() => setRemoving(null)}
+        title={`Retirer ${removing?.firstName ?? ""} ?`}
+      >
         <p>Sa liste d&apos;envies et ses idées seront supprimées.</p>
         {error ? <p className={styles.error}>{error}</p> : null}
         <button
           type="button"
           className={`${styles.button} ${styles.buttonBrick}`}
           disabled={pending}
-          onClick={() => removing && run(() => removeParticipantAction(removing.id), () => setRemoving(null))}
+          onClick={() =>
+            removing &&
+            run(
+              () => removeParticipantAction(removing.id),
+              () => setRemoving(null),
+            )
+          }
         >
           Oui, retirer
         </button>
-        <button type="button" className={`${styles.button} ${styles.buttonGhost}`} onClick={() => setRemoving(null)}>
+        <button
+          type="button"
+          className={`${styles.button} ${styles.buttonGhost}`}
+          onClick={() => setRemoving(null)}
+        >
           Annuler
         </button>
       </Sheet>

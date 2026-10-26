@@ -5,7 +5,14 @@ import { listParticipants } from "@/lib/participants";
 import { testDb } from "@/test-utils/db";
 import { runFullFlow } from "@/test-utils/flow";
 
-const PARTICIPANT_REFS = new Set(["author_id", "owner_id", "target_id", "participant_id", "a_id", "b_id"]);
+const PARTICIPANT_REFS = new Set([
+  "author_id",
+  "owner_id",
+  "target_id",
+  "participant_id",
+  "a_id",
+  "b_id",
+]);
 
 afterEach(() => {
   resetAssignmentCache();
@@ -26,7 +33,10 @@ async function flow() {
 }
 
 function tables(db: ReturnType<typeof testDb>): string[] {
-  return db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").pluck().all() as string[];
+  return db
+    .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")
+    .pluck()
+    .all() as string[];
 }
 
 describe("privacy audit over a whole event", () => {
@@ -43,9 +53,15 @@ describe("privacy audit over a whole event", () => {
     const assignment = loadAssignment(db)!;
     for (const t of tables(db).filter((name) => name !== "pair_rule" && name !== "idea")) {
       for (const row of db.prepare(`SELECT * FROM ${t}`).all() as Record<string, unknown>[]) {
-        const refs = new Set(Object.entries(row).filter(([k]) => PARTICIPANT_REFS.has(k)).map(([, v]) => v));
+        const refs = new Set(
+          Object.entries(row)
+            .filter(([k]) => PARTICIPANT_REFS.has(k))
+            .map(([, v]) => v),
+        );
         for (const [giver, receiver] of assignment) {
-          expect(refs.has(giver) && refs.has(receiver), `${t} links ${giver} and ${receiver}`).toBe(false);
+          expect(refs.has(giver) && refs.has(receiver), `${t} links ${giver} and ${receiver}`).toBe(
+            false,
+          );
         }
       }
     }

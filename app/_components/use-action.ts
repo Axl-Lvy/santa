@@ -8,7 +8,7 @@ import type { ActionResult } from "@/lib/actions/result";
 export function useAction() {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const run = <T,>(action: () => Promise<ActionResult<T>>, onOk?: (value: T) => void) =>
+  const run = <T>(action: () => Promise<ActionResult<T>>, onOk?: (value: T) => void) =>
     startTransition(async () => {
       const result = await action();
       if (result.ok) {

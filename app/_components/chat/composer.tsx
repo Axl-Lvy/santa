@@ -26,7 +26,9 @@ export function ChatComposer({
       const result = await onSend(item.body).catch(() => ({ ok: false as const, error: "" }));
       startTransition(() =>
         setOutbox((o) =>
-          result.ok ? o.filter((x) => x.key !== item.key) : o.map((x) => (x.key === item.key ? { ...x, status: "failed" } : x)),
+          result.ok
+            ? o.filter((x) => x.key !== item.key)
+            : o.map((x) => (x.key === item.key ? { ...x, status: "failed" } : x)),
         ),
       );
     });
@@ -42,20 +44,20 @@ export function ChatComposer({
   return (
     <>
       <div className={styles.outbox}>
-      {outbox.map((item) =>
-        item.status === "failed" ? (
-          <div key={item.key} className={styles.failed}>
-            <Bubble mine>{item.body}</Bubble>
-            <button type="button" className={styles.retry} onClick={() => deliver(item)}>
-              Pas envoyé · Réessayer
-            </button>
-          </div>
-        ) : (
-          <Bubble key={item.key} mine sending>
-            {item.body}
-          </Bubble>
-        ),
-      )}
+        {outbox.map((item) =>
+          item.status === "failed" ? (
+            <div key={item.key} className={styles.failed}>
+              <Bubble mine>{item.body}</Bubble>
+              <button type="button" className={styles.retry} onClick={() => deliver(item)}>
+                Pas envoyé · Réessayer
+              </button>
+            </div>
+          ) : (
+            <Bubble key={item.key} mine sending>
+              {item.body}
+            </Bubble>
+          ),
+        )}
       </div>
       <form
         className={styles.composer}

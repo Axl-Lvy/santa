@@ -20,9 +20,12 @@ export function saveAssignment(db: Db, assignment: Map<number, number>): void {
 export function loadAssignment(db: Db): Map<number, number> | null {
   const cached = cache.get(db);
   if (cached) return cached;
-  const raw = db.prepare("SELECT payload_enc FROM assignment_blob WHERE id = 1").pluck().get() as string | undefined;
+  const raw = db.prepare("SELECT payload_enc FROM assignment_blob WHERE id = 1").pluck().get() as
+    string | undefined;
   if (!raw) return null;
-  const map = new Map(Object.entries(box().open<Record<string, number>>(raw)).map(([g, r]) => [Number(g), r]));
+  const map = new Map(
+    Object.entries(box().open<Record<string, number>>(raw)).map(([g, r]) => [Number(g), r]),
+  );
   cache.set(db, map);
   return map;
 }

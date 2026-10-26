@@ -16,30 +16,50 @@ afterEach(() => setNow(null));
 
 describe("shouldSendDigest", () => {
   it("sends when the oldest unseen message is 2 h old and no digest went out yet", () => {
-    expect(shouldSendDigest({ oldestUnseenAt: hoursBefore(tenParis, 2), lastDigestAt: null, now: tenParis })).toBe(true);
+    expect(
+      shouldSendDigest({
+        oldestUnseenAt: hoursBefore(tenParis, 2),
+        lastDigestAt: null,
+        now: tenParis,
+      }),
+    ).toBe(true);
   });
 
   it("waits until the message is 2 h old", () => {
     expect(
-      shouldSendDigest({ oldestUnseenAt: new Date(tenParis.getTime() - 119 * 60_000), lastDigestAt: null, now: tenParis }),
+      shouldSendDigest({
+        oldestUnseenAt: new Date(tenParis.getTime() - 119 * 60_000),
+        lastDigestAt: null,
+        now: tenParis,
+      }),
     ).toBe(false);
   });
 
   it("waits 6 h between digests", () => {
     const last = new Date(tenParis.getTime() - (6 * 60 - 1) * 60_000);
-    expect(shouldSendDigest({ oldestUnseenAt: hoursBefore(tenParis, 3), lastDigestAt: last, now: tenParis })).toBe(false);
+    expect(
+      shouldSendDigest({
+        oldestUnseenAt: hoursBefore(tenParis, 3),
+        lastDigestAt: last,
+        now: tenParis,
+      }),
+    ).toBe(false);
   });
 
   it("stays quiet outside 08:00–21:00 Paris", () => {
     const ninePm = at("2026-12-01T20:00:00Z");
     const sevenFiftyNine = at("2026-12-01T06:59:00Z");
     for (const now of [ninePm, sevenFiftyNine]) {
-      expect(shouldSendDigest({ oldestUnseenAt: hoursBefore(now, 3), lastDigestAt: null, now })).toBe(false);
+      expect(
+        shouldSendDigest({ oldestUnseenAt: hoursBefore(now, 3), lastDigestAt: null, now }),
+      ).toBe(false);
     }
   });
 
   it("does nothing without unseen messages", () => {
-    expect(shouldSendDigest({ oldestUnseenAt: null, lastDigestAt: null, now: tenParis })).toBe(false);
+    expect(shouldSendDigest({ oldestUnseenAt: null, lastDigestAt: null, now: tenParis })).toBe(
+      false,
+    );
   });
 });
 

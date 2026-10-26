@@ -12,7 +12,12 @@ function pages(dir: string): string[] {
 describe("privacy rule 5: routes are relative to the viewer", () => {
   it("serves exactly the reviewed pages", () => {
     const routes = pages("app")
-      .map((p) => relative("app", p).split(sep).slice(0, -1).filter((s) => !/^\(.*\)$/.test(s)))
+      .map((p) =>
+        relative("app", p)
+          .split(sep)
+          .slice(0, -1)
+          .filter((s) => !/^\(.*\)$/.test(s)),
+      )
       .map((segments) => `/${segments.join("/")}`)
       .sort();
     expect(routes).toEqual(

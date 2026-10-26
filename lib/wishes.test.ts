@@ -8,7 +8,11 @@ describe("wishes", () => {
     const db = testDb();
     const [p] = seedParticipants(db, ["Léon"]);
     const a = addWish(db, p.id, { title: " Un livre ", detail: "", url: "" });
-    const b = addWish(db, p.id, { title: "Des gants", detail: "Taille M", url: "https://exemple.fr/x" });
+    const b = addWish(db, p.id, {
+      title: "Des gants",
+      detail: "Taille M",
+      url: "https://exemple.fr/x",
+    });
     expect(a).toMatchObject({ title: "Un livre", detail: null, url: null, position: 0 });
     expect(b.position).toBe(1);
     updateWish(db, p.id, a.id, { title: "Un roman", detail: "policier", url: "" });
@@ -21,23 +25,32 @@ describe("wishes", () => {
     const db = testDb();
     const [p] = seedParticipants(db, ["Léon"]);
     expect(() => addWish(db, p.id, { title: " ", detail: "", url: "" })).toThrow(ValidationError);
-    expect(() => addWish(db, p.id, { title: "x".repeat(201), detail: "", url: "" })).toThrow(ValidationError);
-    expect(() => addWish(db, p.id, { title: "ok", detail: "x".repeat(501), url: "" })).toThrow(ValidationError);
-  });
-
-  it.each(["javascript:alert(1)", "data:text/html,hi", "ftp://x.fr/a", "exemple.fr"])("refuses the link %s", (url) => {
-    const db = testDb();
-    const [p] = seedParticipants(db, ["Léon"]);
-    expect(() => addWish(db, p.id, { title: "ok", detail: "", url })).toThrow(
-      "Le lien doit commencer par http:// ou https://",
+    expect(() => addWish(db, p.id, { title: "x".repeat(201), detail: "", url: "" })).toThrow(
+      ValidationError,
+    );
+    expect(() => addWish(db, p.id, { title: "ok", detail: "x".repeat(501), url: "" })).toThrow(
+      ValidationError,
     );
   });
+
+  it.each(["javascript:alert(1)", "data:text/html,hi", "ftp://x.fr/a", "exemple.fr"])(
+    "refuses the link %s",
+    (url) => {
+      const db = testDb();
+      const [p] = seedParticipants(db, ["Léon"]);
+      expect(() => addWish(db, p.id, { title: "ok", detail: "", url })).toThrow(
+        "Le lien doit commencer par http:// ou https://",
+      );
+    },
+  );
 
   it("refuses edits by someone else", () => {
     const db = testDb();
     const [p, q] = seedParticipants(db, ["Léon", "Mamie"]);
     const w = addWish(db, p.id, { title: "ok", detail: "", url: "" });
-    expect(() => updateWish(db, q.id, w.id, { title: "volé", detail: "", url: "" })).toThrow(ValidationError);
+    expect(() => updateWish(db, q.id, w.id, { title: "volé", detail: "", url: "" })).toThrow(
+      ValidationError,
+    );
     expect(() => deleteWish(db, q.id, w.id)).toThrow(ValidationError);
   });
 });

@@ -11,12 +11,12 @@ Pushing to `main` runs `.github/workflows/image.yml`: lint, typecheck, tests, th
 `hosts/minipc/docker-compose.yml`: add a network next to `amadis-edge` and put it on both connectors.
 
 ```yaml
-  # santa's path to both connectors and its egress (Brevo SMTP, Access certs). Only the connectors and
-  # santa join it, so nothing else in the stack can reach the app that holds who-drew-whom.
-  santa-edge:
-    ipam:
-      config:
-        - subnet: 172.30.11.0/24
+# santa's path to both connectors and its egress (Brevo SMTP, Access certs). Only the connectors and
+# santa join it, so nothing else in the stack can reach the app that holds who-drew-whom.
+santa-edge:
+  ipam:
+    config:
+      - subnet: 172.30.11.0/24
 ```
 
 Re-check the subnet is unused first: `grep -ho 'subnet: 172[^ ]*' hosts/minipc/docker-compose*.yml`. Add `santa-edge` to the `networks:` of `cloudflared` and `cloudflared-v6`.
@@ -24,36 +24,42 @@ Re-check the subnet is unused first: `grep -ho 'subnet: 172[^ ]*' hosts/minipc/d
 `hosts/minipc/docker-compose.apps.yml`:
 
 ```yaml
-  # Secret Santa (github.com/Axl-Lvy/santa). Public hostname santa.axl-lvy.fr behind Cloudflare Access
-  # (secretsanta-users). The app verifies the Access JWT itself. No published port.
-  santa:
-    labels:
-      homelab.group: santa
-    image: ghcr.io/axl-lvy/santa@sha256:<digest>
-    restart: unless-stopped
-    environment:
-      DATABASE_PATH: /data/santa.db
-      APP_URL: https://santa.axl-lvy.fr
-      TZ: "${TZ:-Europe/Paris}"
-      SANTA_DATA_KEY: "${SANTA_DATA_KEY:-}"
-      ADMIN_EMAIL: "${SANTA_ADMIN_EMAIL:-}"
-      CF_ACCESS_TEAM_DOMAIN: "${SANTA_CF_ACCESS_TEAM_DOMAIN:-}"
-      CF_ACCESS_AUD: "${SANTA_CF_ACCESS_AUD:-}"
-      SMTP_HOST: smtp-relay.brevo.com
-      SMTP_PORT: "587"
-      SMTP_USER: "${SANTA_SMTP_USER:-}"
-      SMTP_PASSWORD: "${SANTA_SMTP_PASSWORD:-}"
-      MAIL_FROM: '"Père Noël secret" <no-reply@axl-lvy.fr>'
-    volumes:
-      - santa_data:/data
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
-      interval: 30s
-      timeout: 10s
-      start_period: 30s
-      retries: 3
-    networks: [santa-edge]
-    profiles: [apps]
+# Secret Santa (github.com/Axl-Lvy/santa). Public hostname santa.axl-lvy.fr behind Cloudflare Access
+# (secretsanta-users). The app verifies the Access JWT itself. No published port.
+santa:
+  labels:
+    homelab.group: santa
+  image: ghcr.io/axl-lvy/santa@sha256:<digest>
+  restart: unless-stopped
+  environment:
+    DATABASE_PATH: /data/santa.db
+    APP_URL: https://santa.axl-lvy.fr
+    TZ: "${TZ:-Europe/Paris}"
+    SANTA_DATA_KEY: "${SANTA_DATA_KEY:-}"
+    ADMIN_EMAIL: "${SANTA_ADMIN_EMAIL:-}"
+    CF_ACCESS_TEAM_DOMAIN: "${SANTA_CF_ACCESS_TEAM_DOMAIN:-}"
+    CF_ACCESS_AUD: "${SANTA_CF_ACCESS_AUD:-}"
+    SMTP_HOST: smtp-relay.brevo.com
+    SMTP_PORT: "587"
+    SMTP_USER: "${SANTA_SMTP_USER:-}"
+    SMTP_PASSWORD: "${SANTA_SMTP_PASSWORD:-}"
+    MAIL_FROM: '"Père Noël secret" <no-reply@axl-lvy.fr>'
+  volumes:
+    - santa_data:/data
+  healthcheck:
+    test:
+      [
+        "CMD",
+        "node",
+        "-e",
+        "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+      ]
+    interval: 30s
+    timeout: 10s
+    start_period: 30s
+    retries: 3
+  networks: [santa-edge]
+  profiles: [apps]
 ```
 
 Declare `santa_data:` under the top-level `volumes:` and add the `SANTA_*` keys, empty, to `hosts/minipc/.env.example`. No `:?` guards: the app refuses to start with a clear log line when config is missing (`santa: invalid configuration: …`).

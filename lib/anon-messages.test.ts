@@ -16,7 +16,15 @@ function drawnFamily() {
   const db = testDb();
   const [a, b, c, d] = seedParticipants(db, ["A", "B", "C", "D"]);
   // A→B→C→D→A
-  saveAssignment(db, new Map([[a.id, b.id], [b.id, c.id], [c.id, d.id], [d.id, a.id]]));
+  saveAssignment(
+    db,
+    new Map([
+      [a.id, b.id],
+      [b.id, c.id],
+      [c.id, d.id],
+      [d.id, a.id],
+    ]),
+  );
   db.prepare("UPDATE event SET drawn_at = '2026-12-01T10:00:00Z'").run();
   const p = (id: number) => getParticipant(db, id)!;
   return { db, a: p(a.id), b: p(b.id), c: p(c.id), d: p(d.id) };
@@ -49,7 +57,12 @@ describe("anonymous threads", () => {
     const { db, a, b, c, d } = drawnFamily();
     const spy = vi.spyOn(bus, "publish");
     notifyAnon(db, postAnon(db, b, "santa", "réponse"));
-    expect(spy.mock.calls).toEqual(expect.arrayContaining([[a.id, "giftee"], [b.id, "santa"]]));
+    expect(spy.mock.calls).toEqual(
+      expect.arrayContaining([
+        [a.id, "giftee"],
+        [b.id, "santa"],
+      ]),
+    );
     expect(spy.mock.calls.map((c) => c[0])).not.toContain(c.id);
     expect(spy.mock.calls.map((c) => c[0])).not.toContain(d.id);
   });

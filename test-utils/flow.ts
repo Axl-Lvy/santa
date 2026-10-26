@@ -16,7 +16,9 @@ import { seedParticipants } from "./db";
 const NAMES = ["Axel", "Léon", "Mamie", "Papa", "Julie", "Théo", "Sophie", "Camille"];
 
 /** Runs a whole event with unique markers; returns the markers that must never appear in clear. */
-export async function runFullFlow(db: Db): Promise<{ secrets: string[]; mailsDuringAnonymous: Mail[]; digestMails: Mail[] }> {
+export async function runFullFlow(
+  db: Db,
+): Promise<{ secrets: string[]; mailsDuringAnonymous: Mail[]; digestMails: Mail[] }> {
   const people = seedParticipants(db, NAMES).map((p) => getParticipant(db, p.id)!);
   addRule(db, people[0].id, people[1].id);
   addRule(db, people[2].id, people[3].id);

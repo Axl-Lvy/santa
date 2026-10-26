@@ -23,7 +23,10 @@ test("a wish refuses a javascript: link and accepts https", async ({ browser, co
   await expect(leon.getByRole("link", { name: "🔗 Voir le lien" })).toBeVisible();
 });
 
-test("a family message appears on another phone without reloading", async ({ browser, contextOptions }) => {
+test("a family message appears on another phone without reloading", async ({
+  browser,
+  contextOptions,
+}) => {
   const leon = await pageAs(browser, contextOptions, "leon@test.fr");
   const mamie = await pageAs(browser, contextOptions, "mamie@test.fr");
   await mamie.goto("/messages/famille");

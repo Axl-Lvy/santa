@@ -2,7 +2,15 @@ import type { Wish } from "@/lib/wishes";
 
 import styles from "./wish-card.module.css";
 
-export function WishCard({ wish, onClick, pending }: { wish: Wish; onClick?: () => void; pending?: boolean }) {
+export function WishCard({
+  wish,
+  onClick,
+  pending,
+}: {
+  wish: Wish;
+  onClick?: () => void;
+  pending?: boolean;
+}) {
   const body = (
     <>
       <span className={styles.title}>{wish.title}</span>

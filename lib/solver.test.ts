@@ -1,4 +1,10 @@
-import { NoValidDrawError, drawAssignment, isDrawPossible, possibleSantas, type Rule } from "./solver";
+import {
+  NoValidDrawError,
+  drawAssignment,
+  isDrawPossible,
+  possibleSantas,
+  type Rule,
+} from "./solver";
 
 const ids = (n: number) => Array.from({ length: n }, (_, i) => i + 1);
 
@@ -16,12 +22,20 @@ describe("isDrawPossible", () => {
 describe("possibleSantas", () => {
   it("lists everyone who can give to the target in some valid draw", () => {
     expect(possibleSantas(1, ids(4), [[1, 2]])).toEqual([3, 4]);
-    expect(possibleSantas(1, ids(4), [[1, 2], [1, 3]])).toEqual([4]);
+    expect(
+      possibleSantas(1, ids(4), [
+        [1, 2],
+        [1, 3],
+      ]),
+    ).toEqual([4]);
   });
 });
 
 describe("drawAssignment", () => {
-  const rules: Rule[] = [[1, 2], [3, 4]];
+  const rules: Rule[] = [
+    [1, 2],
+    [3, 4],
+  ];
 
   it("always yields a valid permutation and sometimes a mutual pair", () => {
     let mutual = 0;
@@ -44,7 +58,9 @@ describe("drawAssignment", () => {
     const counts = new Map<string, number>();
     for (let run = 0; run < 18000; run++) {
       const a = drawAssignment(ids(4), []);
-      const key = ids(4).map((i) => a.get(i)).join("");
+      const key = ids(4)
+        .map((i) => a.get(i))
+        .join("");
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     expect(counts.size).toBe(9);

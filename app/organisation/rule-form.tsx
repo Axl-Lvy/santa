@@ -41,7 +41,12 @@ export function RuleForm({ people, rules }: { people: Person[]; rules: [number, 
           </div>
         ))}
         <div className={admin.pickers}>
-          <select className={admin.select} value={a} onChange={(e) => setA(e.target.value)} aria-label="Première personne">
+          <select
+            className={admin.select}
+            value={a}
+            onChange={(e) => setA(e.target.value)}
+            aria-label="Première personne"
+          >
             <option value="">Choisir…</option>
             {people.map((p) => (
               <option key={p.id} value={p.id}>
@@ -50,7 +55,12 @@ export function RuleForm({ people, rules }: { people: Person[]; rules: [number, 
             ))}
           </select>
           <span aria-hidden>✕</span>
-          <select className={admin.select} value={b} onChange={(e) => setB(e.target.value)} aria-label="Deuxième personne">
+          <select
+            className={admin.select}
+            value={b}
+            onChange={(e) => setB(e.target.value)}
+            aria-label="Deuxième personne"
+          >
             <option value="">Choisir…</option>
             {people.map((p) => (
               <option key={p.id} value={p.id}>

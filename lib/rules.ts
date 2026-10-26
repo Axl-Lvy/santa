@@ -6,9 +6,12 @@ import { isDrawPossible, type Rule } from "./solver";
 const ordered = (a: number, b: number): [number, number] => (a < b ? [a, b] : [b, a]);
 
 export function listRules(db: Db): Rule[] {
-  return (db.prepare("SELECT a_id, b_id FROM pair_rule ORDER BY a_id, b_id").all() as { a_id: number; b_id: number }[]).map(
-    (r) => [r.a_id, r.b_id] as const,
-  );
+  return (
+    db.prepare("SELECT a_id, b_id FROM pair_rule ORDER BY a_id, b_id").all() as {
+      a_id: number;
+      b_id: number;
+    }[]
+  ).map((r) => [r.a_id, r.b_id] as const);
 }
 
 /** Adds "a and b are never each other's Santa"; refused when no draw would remain. */

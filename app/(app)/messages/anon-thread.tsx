@@ -48,7 +48,9 @@ export async function AnonThread({ side }: { side: "giftee" | "santa" }) {
           createdAt: m.createdAt,
         }))}
         empty={`Écris le premier message à ${giftee.firstName}, en secret.`}
-        composer={<ChatComposer placeholder={`Écrire à ${giftee.firstName}…`} onSend={sendToGiftee} />}
+        composer={
+          <ChatComposer placeholder={`Écrire à ${giftee.firstName}…`} onSend={sendToGiftee} />
+        }
       />
     );
   }

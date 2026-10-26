@@ -22,11 +22,18 @@ async function adminDo(fn: () => void): Promise<ActionResult> {
   return result;
 }
 
-export async function addParticipantAction(firstName: string, email: string): Promise<ActionResult> {
+export async function addParticipantAction(
+  firstName: string,
+  email: string,
+): Promise<ActionResult> {
   return adminDo(() => addParticipant(getDb(), { firstName, email }));
 }
 
-export async function updateParticipantAction(id: number, firstName: string, email: string): Promise<ActionResult> {
+export async function updateParticipantAction(
+  id: number,
+  firstName: string,
+  email: string,
+): Promise<ActionResult> {
   return adminDo(() => updateParticipant(getDb(), id, { firstName, email }));
 }
 
@@ -46,7 +53,8 @@ export async function setBudgetAction(raw: string): Promise<ActionResult> {
   return adminDo(() => {
     const trimmed = raw.trim();
     if (trimmed === "") return setBudget(getDb(), null);
-    if (!/^\d+$/.test(trimmed)) throw new ValidationError("Le budget doit être un nombre entier d'euros.");
+    if (!/^\d+$/.test(trimmed))
+      throw new ValidationError("Le budget doit être un nombre entier d'euros.");
     setBudget(getDb(), Number(trimmed));
   });
 }

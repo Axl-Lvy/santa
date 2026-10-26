@@ -3,9 +3,23 @@ import type { Db } from "./db";
 import { ValidationError } from "./errors";
 import { now } from "./time";
 
-export type Idea = { id: number; authorId: number; targetId: number; body: string; createdAt: string; updatedAt: string };
+export type Idea = {
+  id: number;
+  authorId: number;
+  targetId: number;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
-type Row = { id: number; author_id: number; target_id: number; body_enc: string; created_at: string; updated_at: string };
+type Row = {
+  id: number;
+  author_id: number;
+  target_id: number;
+  body_enc: string;
+  created_at: string;
+  updated_at: string;
+};
 
 const toIdea = (r: Row): Idea => ({
   id: r.id,
@@ -19,7 +33,8 @@ const toIdea = (r: Row): Idea => ({
 function cleanBody(body: string): string {
   const text = body.trim();
   if (!text) throw new ValidationError("Écris ton idée avant de l'envoyer.");
-  if (text.length > 500) throw new ValidationError("Ton idée est un peu longue : 500 caractères maximum.");
+  if (text.length > 500)
+    throw new ValidationError("Ton idée est un peu longue : 500 caractères maximum.");
   return text;
 }
 
@@ -30,14 +45,17 @@ function getOwned(db: Db, authorId: number, id: number): Idea {
 }
 
 export function addIdea(db: Db, authorId: number, targetId: number, body: string): Idea {
-  if (authorId === targetId) throw new ValidationError("Tu ne peux pas souffler une idée pour toi-même.");
+  if (authorId === targetId)
+    throw new ValidationError("Tu ne peux pas souffler une idée pour toi-même.");
   if (!db.prepare("SELECT 1 FROM participant WHERE id = ?").get(targetId)) {
     throw new ValidationError("Cette personne n'existe pas.");
   }
   const at = now().toISOString();
   const id = Number(
     db
-      .prepare("INSERT INTO idea (author_id, target_id, body_enc, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
+      .prepare(
+        "INSERT INTO idea (author_id, target_id, body_enc, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+      )
       .run(authorId, targetId, box().seal(cleanBody(body)), at, at).lastInsertRowid,
   );
   return getOwned(db, authorId, id);
@@ -59,9 +77,13 @@ export function deleteIdea(db: Db, authorId: number, id: number): void {
 }
 
 export function listIdeasByAuthor(db: Db, authorId: number): Idea[] {
-  return (db.prepare("SELECT * FROM idea WHERE author_id = ? ORDER BY id DESC").all(authorId) as Row[]).map(toIdea);
+  return (
+    db.prepare("SELECT * FROM idea WHERE author_id = ? ORDER BY id DESC").all(authorId) as Row[]
+  ).map(toIdea);
 }
 
 export function listIdeasForTarget(db: Db, targetId: number): Idea[] {
-  return (db.prepare("SELECT * FROM idea WHERE target_id = ? ORDER BY id DESC").all(targetId) as Row[]).map(toIdea);
+  return (
+    db.prepare("SELECT * FROM idea WHERE target_id = ? ORDER BY id DESC").all(targetId) as Row[]
+  ).map(toIdea);
 }

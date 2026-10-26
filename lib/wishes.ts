@@ -13,7 +13,14 @@ export type Wish = {
 
 export type WishInput = { title: string; detail: string; url: string };
 
-type Row = { id: number; owner_id: number; title: string; detail: string | null; url: string | null; position: number };
+type Row = {
+  id: number;
+  owner_id: number;
+  title: string;
+  detail: string | null;
+  url: string | null;
+  position: number;
+};
 
 const toWish = (r: Row): Wish => ({
   id: r.id,
@@ -30,7 +37,8 @@ function clean(input: WishInput): { title: string; detail: string | null; url: s
   const url = input.url.trim();
   if (!title) throw new ValidationError("Dis-nous ce qui te ferait plaisir.");
   if (title.length > 200) throw new ValidationError("C'est un peu long : 200 caractères maximum.");
-  if (detail.length > 500) throw new ValidationError("Le détail est un peu long : 500 caractères maximum.");
+  if (detail.length > 500)
+    throw new ValidationError("Le détail est un peu long : 500 caractères maximum.");
   if (url && (url.length > 2000 || !/^https?:\/\/\S+$/i.test(url))) {
     throw new ValidationError("Le lien doit commencer par http:// ou https://");
   }
@@ -38,7 +46,9 @@ function clean(input: WishInput): { title: string; detail: string | null; url: s
 }
 
 export function listWishes(db: Db, ownerId: number): Wish[] {
-  return (db.prepare("SELECT * FROM wish WHERE owner_id = ? ORDER BY position, id").all(ownerId) as Row[]).map(toWish);
+  return (
+    db.prepare("SELECT * FROM wish WHERE owner_id = ? ORDER BY position, id").all(ownerId) as Row[]
+  ).map(toWish);
 }
 
 function getOwned(db: Db, ownerId: number, id: number): Wish {
@@ -51,7 +61,10 @@ export function addWish(db: Db, ownerId: number, input: WishInput): Wish {
   const { title, detail, url } = clean(input);
   const at = now().toISOString();
   const position =
-    (db.prepare("SELECT coalesce(max(position) + 1, 0) FROM wish WHERE owner_id = ?").pluck().get(ownerId) as number) ?? 0;
+    (db
+      .prepare("SELECT coalesce(max(position) + 1, 0) FROM wish WHERE owner_id = ?")
+      .pluck()
+      .get(ownerId) as number) ?? 0;
   const id = Number(
     db
       .prepare(

@@ -17,7 +17,13 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
   projects: [
     { name: "pre-draw", testMatch: /pre-draw\.spec\.ts/, use: { ...devices["Pixel 7"] } },
-    { name: "draw", testMatch: /draw\.spec\.ts/, testIgnore: /pre-draw/, dependencies: ["pre-draw"], use: { ...devices["iPhone 13"] } },
+    {
+      name: "draw",
+      testMatch: /draw\.spec\.ts/,
+      testIgnore: /pre-draw/,
+      dependencies: ["pre-draw"],
+      use: { ...devices["iPhone 13"] },
+    },
   ],
   webServer: {
     command: `next dev -p ${PORT}`,

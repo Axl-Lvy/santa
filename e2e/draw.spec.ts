@@ -10,8 +10,13 @@ test("the admin launches the draw once, even with a double tap", async ({ page, 
   await page.getByRole("button", { name: "Lancer le tirage 🎲" }).click();
   await page.getByRole("button", { name: "Oui, lancer le tirage" }).dblclick();
   await expect(page.getByText("Le tirage est fait 🎉")).toBeVisible();
-  await expect.poll(async () => (await (await request.get("/api/dev/outbox")).json()).length).toBe(FAMILY.length);
-  const mails = (await (await request.get("/api/dev/outbox")).json()) as { to: string; text: string }[];
+  await expect
+    .poll(async () => (await (await request.get("/api/dev/outbox")).json()).length)
+    .toBe(FAMILY.length);
+  const mails = (await (await request.get("/api/dev/outbox")).json()) as {
+    to: string;
+    text: string;
+  }[];
   const neutral = mails.map((m) => {
     const me = FAMILY.find((p) => p.email === m.to)!;
     return m.text.replaceAll(me.firstName, "X");
@@ -20,7 +25,10 @@ test("the admin launches the draw once, even with a double tap", async ({ page, 
   await expect(page.locator("body")).not.toContainText("fait un cadeau à");
 });
 
-test("each person reveals, and a second phone does not replay it", async ({ browser, contextOptions }) => {
+test("each person reveals, and a second phone does not replay it", async ({
+  browser,
+  contextOptions,
+}) => {
   for (const p of FAMILY) {
     const page = await pageAs(browser, contextOptions, p.email);
     await page.goto("/");
@@ -34,7 +42,10 @@ test("each person reveals, and a second phone does not replay it", async ({ brow
   await expect(second.getByText("Cette année, tu fais un cadeau à")).toBeVisible();
 });
 
-test("a Santa's message reaches exactly their giftee, live", async ({ browser, contextOptions }) => {
+test("a Santa's message reaches exactly their giftee, live", async ({
+  browser,
+  contextOptions,
+}) => {
   const others: Page[] = [];
   for (const p of FAMILY.filter((x) => x.email !== "leon@test.fr")) {
     const page = await pageAs(browser, contextOptions, p.email);
@@ -49,7 +60,8 @@ test("a Santa's message reaches exactly their giftee, live", async ({ browser, c
   await expect
     .poll(async () => {
       let seen = 0;
-      for (const page of others) seen += await page.getByText("Tu préfères le thé ou le café ?").count();
+      for (const page of others)
+        seen += await page.getByText("Tu préfères le thé ou le café ?").count();
       return seen;
     })
     .toBe(1);

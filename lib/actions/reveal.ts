@@ -10,5 +10,8 @@ export async function markRevealedAction(): Promise<void> {
   const { me } = await requireParticipant();
   const db = getDb();
   if (!isDrawn(db)) return;
-  db.prepare("UPDATE participant SET revealed_at = ? WHERE id = ? AND revealed_at IS NULL").run(now().toISOString(), me.id);
+  db.prepare("UPDATE participant SET revealed_at = ? WHERE id = ? AND revealed_at IS NULL").run(
+    now().toISOString(),
+    me.id,
+  );
 }

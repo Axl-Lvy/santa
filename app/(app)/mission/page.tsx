@@ -28,7 +28,9 @@ export default async function Mission() {
       {wishes.map((w) => (
         <WishCard key={w.id} wish={w} />
       ))}
-      {wishes.length === 0 ? <p className={styles.sub}>{giftee.firstName} n&apos;a pas encore écrit d&apos;envie.</p> : null}
+      {wishes.length === 0 ? (
+        <p className={styles.sub}>{giftee.firstName} n&apos;a pas encore écrit d&apos;envie.</p>
+      ) : null}
 
       <h2 className={styles.section}>💡 Idées de la famille · secret</h2>
       {ideas.map((idea) => (
@@ -37,7 +39,9 @@ export default async function Mission() {
           <span>Une idée anonyme</span>
         </div>
       ))}
-      {ideas.length === 0 ? <p className={styles.sub}>Personne n&apos;a encore soufflé d&apos;idée.</p> : null}
+      {ideas.length === 0 ? (
+        <p className={styles.sub}>Personne n&apos;a encore soufflé d&apos;idée.</p>
+      ) : null}
     </main>
   );
 }

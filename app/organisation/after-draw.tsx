@@ -27,9 +27,16 @@ export function AfterDraw({ drawnOn, rows }: { drawnOn: string; rows: AdminStatu
         {rows.map((r) => (
           <div key={r.id} className={admin.item}>
             <span className={admin.pair}>{r.firstName}</span>
-            <span className={r.status === "revealed" ? admin.statusOk : admin.statusNo}>{LABEL[r.status]}</span>
+            <span className={r.status === "revealed" ? admin.statusOk : admin.statusNo}>
+              {LABEL[r.status]}
+            </span>
             {r.status === "revealed" ? null : (
-              <button type="button" className={admin.link} disabled={pending} onClick={() => run(() => resendDrawEmailAction(r.id))}>
+              <button
+                type="button"
+                className={admin.link}
+                disabled={pending}
+                onClick={() => run(() => resendDrawEmailAction(r.id))}
+              >
                 renvoyer l&apos;email
               </button>
             )}

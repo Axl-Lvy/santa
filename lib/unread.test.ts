@@ -33,7 +33,14 @@ describe("unreadCounts after the draw", () => {
     const { addIdea } = await import("./ideas");
     const db = testDb();
     const [a, b, c] = seedParticipants(db, ["A", "B", "C"]).map((p) => getParticipant(db, p.id)!);
-    saveAssignment(db, new Map([[a.id, b.id], [b.id, c.id], [c.id, a.id]]));
+    saveAssignment(
+      db,
+      new Map([
+        [a.id, b.id],
+        [b.id, c.id],
+        [c.id, a.id],
+      ]),
+    );
     db.prepare("UPDATE event SET drawn_at = '2026-12-01T10:00:00Z'").run();
     setNow(new Date("2026-12-01T10:00:00Z"));
     postAnon(db, c, "giftee", "de mon Père Noël");

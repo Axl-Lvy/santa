@@ -25,11 +25,15 @@ describe("draw email", () => {
   });
 
   it("omits the budget line without a budget", () => {
-    expect(drawEmail({ firstName: "Camille", budgetEur: null, appUrl }).text).not.toContain("Budget");
+    expect(drawEmail({ firstName: "Camille", budgetEur: null, appUrl }).text).not.toContain(
+      "Budget",
+    );
   });
 
   it("escapes the first name in html", () => {
-    expect(drawEmail({ firstName: "<b>Jo</b>", budgetEur: null, appUrl }).html).not.toContain("<b>Jo</b>");
+    expect(drawEmail({ firstName: "<b>Jo</b>", budgetEur: null, appUrl }).html).not.toContain(
+      "<b>Jo</b>",
+    );
   });
 });
 
@@ -37,7 +41,9 @@ describe("digest email", () => {
   it("carries the agreed copy and no other name", () => {
     const m = digestEmail({ firstName: "Camille", appUrl });
     expect(m.subject).toBe("✨ Du nouveau sur le Père Noël secret");
-    expect(m.text).toContain("Bonjour Camille, il y a du nouveau dans la discussion de famille depuis ta dernière visite.");
+    expect(m.text).toContain(
+      "Bonjour Camille, il y a du nouveau dans la discussion de famille depuis ta dernière visite.",
+    );
     expect(m.text).toContain("Voir sur le site");
     expect(neutral(m, "Camille")).toBe(neutral(digestEmail({ firstName: "Léon", appUrl }), "Léon"));
   });

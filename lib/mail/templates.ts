@@ -3,10 +3,20 @@ import type { Mail } from "./transport";
 type Content = Omit<Mail, "to">;
 
 const escape = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+  s.replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+  );
 
 /** Table-based HTML in the Veillée colours; every argument but `paragraphs` is fixed copy. */
-function layout(o: { emoji: string; heading: string; paragraphs: string[]; button: string; href: string; footer?: string }): string {
+function layout(o: {
+  emoji: string;
+  heading: string;
+  paragraphs: string[];
+  button: string;
+  href: string;
+  footer?: string;
+}): string {
   const p = o.paragraphs
     .map((t) => `<p style="margin:0 0 14px;font-size:16px;line-height:1.5;color:#1f3b2d">${t}</p>`)
     .join("");
@@ -23,7 +33,15 @@ ${o.footer ? `<tr><td style="padding:16px 4px;font-size:12px;color:#8a8a7a;text-
 </table></td></tr></table></body></html>`;
 }
 
-export function drawEmail({ firstName, budgetEur, appUrl }: { firstName: string; budgetEur: number | null; appUrl: string }): Content {
+export function drawEmail({
+  firstName,
+  budgetEur,
+  appUrl,
+}: {
+  firstName: string;
+  budgetEur: number | null;
+  appUrl: string;
+}): Content {
   const href = `${appUrl}/decouvrir`;
   const intro = `Bonjour ${firstName}, le tirage est fait. Ouvre le site et gratte ton ticket pour découvrir à qui tu fais un cadeau.`;
   const budget = budgetEur === null ? null : `Budget : environ ${budgetEur} €.`;
@@ -47,6 +65,12 @@ export function digestEmail({ firstName, appUrl }: { firstName: string; appUrl: 
   return {
     subject: "✨ Du nouveau sur le Père Noël secret",
     text: [intro, `Voir sur le site : ${appUrl}`].join("\n\n"),
-    html: layout({ emoji: "✨", heading: "Du nouveau t'attend", paragraphs: [escape(intro)], button: "Voir sur le site", href: appUrl }),
+    html: layout({
+      emoji: "✨",
+      heading: "Du nouveau t'attend",
+      paragraphs: [escape(intro)],
+      button: "Voir sur le site",
+      href: appUrl,
+    }),
   };
 }

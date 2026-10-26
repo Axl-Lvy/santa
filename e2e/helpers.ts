@@ -13,7 +13,11 @@ export async function as(page: Page, email: string): Promise<void> {
 }
 
 /** A fresh page acting as `email`. */
-export async function pageAs(browser: Browser, options: BrowserContextOptions, email: string): Promise<Page> {
+export async function pageAs(
+  browser: Browser,
+  options: BrowserContextOptions,
+  email: string,
+): Promise<Page> {
   const context = await browser.newContext(options);
   const page = await context.newPage();
   await as(page, email);

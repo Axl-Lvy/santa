@@ -1,11 +1,16 @@
 import { publish } from "@/lib/bus";
 
-const viewer = { current: null as null | { email: string; isAdmin: boolean; participant: { id: number } } };
+const viewer = {
+  current: null as null | { email: string; isAdmin: boolean; participant: { id: number } },
+};
 vi.mock("@/lib/viewer", () => ({ getViewer: async () => viewer.current }));
 
 const { GET } = await import("./route");
 
-async function readUntil(reader: ReadableStreamDefaultReader<Uint8Array>, needle: string): Promise<string> {
+async function readUntil(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  needle: string,
+): Promise<string> {
   const decoder = new TextDecoder();
   let text = "";
   while (!text.includes(needle)) {

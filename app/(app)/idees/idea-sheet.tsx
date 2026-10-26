@@ -47,8 +47,8 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
       {selected ? (
         <>
           <p className={ui.note}>
-            🤫 Seul le Père Noël secret de {selected.firstName} verra ton idée, sans savoir qu&apos;elle vient de toi.{" "}
-            {selected.firstName} ne la verra jamais.
+            🤫 Seul le Père Noël secret de {selected.firstName} verra ton idée, sans savoir
+            qu&apos;elle vient de toi. {selected.firstName} ne la verra jamais.
           </p>
           <button
             type="button"
@@ -66,14 +66,24 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
           key={idea.id}
           type="button"
           className={ui.idea}
-          onClick={() => open({ id: idea.id, target: { id: idea.targetId, firstName: name(idea.targetId) }, body: idea.body })}
+          onClick={() =>
+            open({
+              id: idea.id,
+              target: { id: idea.targetId, firstName: name(idea.targetId) },
+              body: idea.body,
+            })
+          }
         >
           <b>{idea.body}</b>
           <span>Pour {name(idea.targetId)}</span>
         </button>
       ))}
 
-      <Sheet open={draft !== null} onClose={() => setDraft(null)} title={`Une idée pour ${draft?.target.firstName ?? ""}`}>
+      <Sheet
+        open={draft !== null}
+        onClose={() => setDraft(null)}
+        title={`Une idée pour ${draft?.target.firstName ?? ""}`}
+      >
         {draft ? (
           <>
             <label className={sheetStyles.label} htmlFor="idea-body">
@@ -92,7 +102,12 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
               type="button"
               className={`${styles.button} ${styles.buttonBrick}`}
               disabled={pending}
-              onClick={() => run(() => saveIdeaAction(draft.id, draft.target.id, draft.body), () => setDraft(null))}
+              onClick={() =>
+                run(
+                  () => saveIdeaAction(draft.id, draft.target.id, draft.body),
+                  () => setDraft(null),
+                )
+              }
             >
               {draft.id ? "Enregistrer" : "Envoyer l'idée"}
             </button>
@@ -101,7 +116,13 @@ export function IdeasPanel({ people, mine }: { people: Person[]; mine: MyIdea[] 
                 type="button"
                 className={`${styles.button} ${styles.buttonGhost}`}
                 disabled={pending}
-                onClick={() => draft.id && run(() => deleteIdeaAction(draft.id!), () => setDraft(null))}
+                onClick={() =>
+                  draft.id &&
+                  run(
+                    () => deleteIdeaAction(draft.id!),
+                    () => setDraft(null),
+                  )
+                }
               >
                 Supprimer cette idée
               </button>

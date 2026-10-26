@@ -13,15 +13,19 @@ export default async function Idees() {
   const people = listParticipants(db)
     .filter((p) => p.id !== me.id)
     .map(({ id, firstName }) => ({ id, firstName }));
-  const mine = listIdeasByAuthor(db, me.id).map(({ id, targetId, body }) => ({ id, targetId, body }));
+  const mine = listIdeasByAuthor(db, me.id).map(({ id, targetId, body }) => ({
+    id,
+    targetId,
+    body,
+  }));
 
   return (
     <TabTransition>
-    <main className={styles.page}>
-      <h1 className={styles.title}>Souffler une idée</h1>
-      <p className={styles.sub}>Pour qui as-tu une idée ?</p>
-      <IdeasPanel people={people} mine={mine} />
-    </main>
+      <main className={styles.page}>
+        <h1 className={styles.title}>Souffler une idée</h1>
+        <p className={styles.sub}>Pour qui as-tu une idée ?</p>
+        <IdeasPanel people={people} mine={mine} />
+      </main>
     </TabTransition>
   );
 }

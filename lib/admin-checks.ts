@@ -20,7 +20,11 @@ export function adminChecks(
   };
 }
 
-export type AdminStatusRow = { id: number; firstName: string; status: "revealed" | "pending" | "email-not-sent" };
+export type AdminStatusRow = {
+  id: number;
+  firstName: string;
+  status: "revealed" | "pending" | "email-not-sent";
+};
 
 /** After the draw: who has revealed, never who drew whom (privacy rule 7). */
 export function adminStatus(db: Db): { drawnAt: string; rows: AdminStatusRow[] } {
