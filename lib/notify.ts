@@ -1,3 +1,5 @@
+import type { AnonMessage } from "./anon-messages";
+import { santaOf } from "./assignment";
 import { publish, type LiveKind } from "./bus";
 import type { Db } from "./db";
 
@@ -16,4 +18,23 @@ export function notifyWishlistChanged(db: Db): void {
 
 export function notifyAll(db: Db, kind: LiveKind): void {
   for (const id of everyone(db)) publish(id, kind);
+}
+
+/** Tells the other side of one Santa–giftee pair, and the sender's other tabs. */
+export function notifyAnon(db: Db, m: AnonMessage): void {
+  const santa = santaOf(db, m.gifteeId);
+  if (santa === null) return;
+  if (m.direction === "from_santa") {
+    publish(m.gifteeId, "santa");
+    publish(santa, "giftee");
+  } else {
+    publish(santa, "giftee");
+    publish(m.gifteeId, "santa");
+  }
+}
+
+/** Tells the target's Santa that a new idea is waiting, once the draw exists. */
+export function notifyIdea(db: Db, targetId: number): void {
+  const santa = santaOf(db, targetId);
+  if (santa !== null) publish(santa, "ideas");
 }
