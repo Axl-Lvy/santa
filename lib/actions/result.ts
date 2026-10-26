@@ -2,7 +2,7 @@ import { unstable_rethrow } from "next/navigation";
 
 import { UserError } from "../errors";
 
-export type ActionResult<T = undefined> = { ok: true; value: T } | { ok: false; error: string };
+export type ActionResult<T = void> = { ok: true; value: T } | { ok: false; error: string };
 
 const GENERIC = "Oups, quelque chose s'est mal passé. Réessaie dans un instant.";
 

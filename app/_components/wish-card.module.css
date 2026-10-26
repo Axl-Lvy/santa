@@ -1,0 +1,49 @@
+.card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  color: inherit;
+}
+
+.main {
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  min-height: 24px;
+}
+
+.title {
+  display: block;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.detail {
+  display: block;
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 2px;
+  white-space: pre-wrap;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--brick);
+}
+
+.pending {
+  opacity: 0.6;
+}

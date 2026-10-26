@@ -28,6 +28,7 @@
 }
 
 .section {
+  font-family: var(--font-text);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { ViewTransition } from "react";
 
 import { Outsider } from "@/app/_components/outsider";
 import { TabBar } from "@/app/_components/tab-bar";
@@ -16,7 +15,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 
   return (
     <>
-      <ViewTransition>{children}</ViewTransition>
+      {children}
       <TabBar />
     </>
   );
