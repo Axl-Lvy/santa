@@ -20,6 +20,7 @@ function isActive(pathname: string, href: string): boolean {
 
 export function TabBar({ badges = {} }: { badges?: Partial<Record<BadgeHref, number>> }) {
   const pathname = usePathname();
+  if (pathname.startsWith("/messages/")) return null;
   return (
     <nav className={styles.bar} aria-label="Navigation">
       {TABS.map((tab) => {

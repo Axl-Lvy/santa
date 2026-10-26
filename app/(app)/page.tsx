@@ -3,11 +3,14 @@ import Link from "next/link";
 import styles from "@/app/_components/card.module.css";
 import { getDb } from "@/lib/db";
 import { getEvent } from "@/lib/event";
+import { listGroupMessages } from "@/lib/group-messages";
 import { requireParticipant } from "@/lib/viewer";
 
 export default async function Home() {
   const { viewer, me } = await requireParticipant();
-  const { budgetEur } = getEvent(getDb());
+  const db = getDb();
+  const { budgetEur } = getEvent(db);
+  const last = listGroupMessages(db, 1)[0];
 
   return (
     <main className={styles.page}>
@@ -51,7 +54,9 @@ export default async function Home() {
         </span>
         <span className={styles.rowText}>
           Discussion de famille
-          <small>Tout le monde peut lire</small>
+          <small>
+            {last ? `${last.authorId === me.id ? "Toi" : last.authorName} : « ${last.body} »` : "Tout le monde peut lire"}
+          </small>
         </span>
       </Link>
       <Link href="/idees" className={styles.row}>
