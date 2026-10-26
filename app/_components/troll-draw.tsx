@@ -21,13 +21,24 @@ export function TrollDraw({ onPick, people, variant = "inline" }: Props) {
   return (
     <>
       <div className={styles.block}>
-        <button
-          type="button"
-          className={variant === "page" ? styles.pageCta : styles.start}
-          onClick={() => setOpen(true)}
-        >
-          Trouver une idée cadeau
-        </button>
+        {variant === "page" ? (
+          <button type="button" className={styles.pageCta} onClick={() => setOpen(true)}>
+            <span className={styles.ctaIcon} aria-hidden>
+              🎁
+            </span>
+            <span className={styles.ctaText}>
+              <span className={styles.ctaTitle}>Trouver une idée cadeau</span>
+              <span className={styles.ctaSub}>En panne d&apos;inspiration ? L&apos;algorithme s&apos;en charge.</span>
+            </span>
+            <span className={styles.ctaArrow} aria-hidden>
+              →
+            </span>
+          </button>
+        ) : (
+          <button type="button" className={styles.start} onClick={() => setOpen(true)}>
+            Trouver une idée cadeau
+          </button>
+        )}
       </div>
       {open ? (
         <TrollReveal
