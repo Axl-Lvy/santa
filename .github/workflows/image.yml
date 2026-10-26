@@ -45,3 +45,23 @@ jobs:
             ghcr.io/axl-lvy/santa:sha-${{ steps.sha.outputs.short }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the mini PC deploy webhook (santa and dev-santa)
+        env:
+          TOKEN: ${{ secrets.SANTA_DEPLOY_WEBHOOK_TOKEN }}
+          CF_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$CF_ID" ] || [ -z "$CF_SECRET" ]; then
+            echo "::warning::Deploy secrets are not set yet; the image is published but not deployed."
+            exit 0
+          fi
+          curl -f --max-time 30 -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "CF-Access-Client-Id: $CF_ID" \
+            -H "CF-Access-Client-Secret: $CF_SECRET" \
+            https://deploy-memorchess.axl-lvy.fr/hooks/deploy-santa

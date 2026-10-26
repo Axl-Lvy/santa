@@ -2,6 +2,19 @@
 
 Everything that happens outside this repo: home-lab wiring, Cloudflare, deploys, rehearsal, wipe.
 
+Two sites run the same image:
+
+| Site | Service | Purpose |
+|---|---|---|
+| `santa.axl-lvy.fr` | `santa` | The real event. Real emails through Brevo. |
+| `dev-santa.axl-lvy.fr` | `santa-dev` | Test site. `SANTA_IMPERSONATION=on`: the admin gets the 🧪 account switcher, every page shows a « site de test » banner, emails are captured (🧪 → « Emails envoyés ») instead of sent. Its own database and data key. |
+
+Every push to `main` runs CI, publishes `ghcr.io/axl-lvy/santa:latest`, then calls the mini PC
+webhook (`/hooks/deploy-santa`), which pulls the image and recreates both services. The deploy
+job needs three GitHub secrets: `SANTA_DEPLOY_WEBHOOK_TOKEN`, `CF_ACCESS_CLIENT_ID`,
+`CF_ACCESS_CLIENT_SECRET`. Until they exist, CI publishes the image and skips the deploy with a
+warning.
+
 ## 1. Publish the image
 
 Pushing to `main` runs `.github/workflows/image.yml`: lint, typecheck, tests, then `ghcr.io/axl-lvy/santa:latest` and `:sha-<short>`. The repo and the ghcr package are public, so the mini PC pulls without credentials. Note the digest of the pushed image (`docker buildx imagetools inspect ghcr.io/axl-lvy/santa:latest`).
