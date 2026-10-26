@@ -57,7 +57,7 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
       <div className={admin.list}>
         {people.map((p) => (
           <div key={p.id} className={admin.item}>
-            <button type="button" className={admin.itemMain} onClick={() => open(p)} aria-label={`Modifier ${p.firstName}`}>
+            <button type="button" className={admin.itemMain} onClick={() => open(p)}>
               <b>{p.firstName}</b>
               <span>{p.email}</span>
             </button>

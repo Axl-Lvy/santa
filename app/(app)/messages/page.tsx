@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import styles from "@/app/_components/card.module.css";
+import { TabTransition } from "@/app/_components/tab-transition";
 import chat from "@/app/_components/chat/chat.module.css";
 import { listAnonThread } from "@/lib/anon-messages";
 import { gifteeOf } from "@/lib/assignment";
@@ -55,6 +56,7 @@ export default async function Messages() {
   const lastToGiftee = giftee ? listAnonThread(db, giftee.id).at(-1) : undefined;
 
   return (
+    <TabTransition>
     <main className={styles.page}>
       <h1 className={styles.title}>Messages</h1>
       {giftee ? (
@@ -91,5 +93,6 @@ export default async function Messages() {
         unread={unread.group}
       />
     </main>
+    </TabTransition>
   );
 }

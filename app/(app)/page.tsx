@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import styles from "@/app/_components/card.module.css";
+import { TabTransition } from "@/app/_components/tab-transition";
 import { getDb } from "@/lib/db";
 import { gifteeOf } from "@/lib/assignment";
 import { getEvent } from "@/lib/event";
@@ -20,6 +21,7 @@ export default async function Home() {
   const wishCount = listWishes(db, me.id).length;
 
   return (
+    <TabTransition>
     <main className={styles.page}>
       <h1 className={styles.title}>
         <span className={styles.kicker}>Noël 2026</span>
@@ -118,5 +120,6 @@ export default async function Home() {
         </div>
       ) : null}
     </main>
+    </TabTransition>
   );
 }

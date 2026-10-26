@@ -25,7 +25,7 @@ export function WishCard({ wish, onClick, pending }: { wish: Wish; onClick?: () 
   }
   return (
     <div className={className}>
-      <button type="button" className={styles.main} onClick={onClick} aria-label={`Modifier : ${wish.title}`}>
+      <button type="button" className={styles.main} onClick={onClick}>
         {body}
       </button>
       {link}

@@ -29,6 +29,7 @@ export function TabBar({ badges = {} }: { badges?: Partial<Record<BadgeHref, num
           <Link
             key={tab.href}
             href={tab.href}
+            transitionTypes={["tab"]}
             className={styles.tab}
             aria-current={isActive(pathname, tab.href) ? "page" : undefined}
           >

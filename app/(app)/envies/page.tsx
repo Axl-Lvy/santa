@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import styles from "@/app/_components/card.module.css";
+import { TabTransition } from "@/app/_components/tab-transition";
 import { getDb } from "@/lib/db";
 import { listParticipants } from "@/lib/participants";
 import { requireParticipant } from "@/lib/viewer";
@@ -14,6 +15,7 @@ export default async function Envies() {
   const others = listParticipants(db).filter((p) => p.id !== me.id);
 
   return (
+    <TabTransition>
     <main className={styles.page}>
       <h1 className={styles.title}>Ma liste d&apos;envies</h1>
       <p className={styles.sub}>Toute la famille peut la voir.</p>
@@ -36,5 +38,6 @@ export default async function Envies() {
         );
       })}
     </main>
+    </TabTransition>
   );
 }

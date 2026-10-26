@@ -109,3 +109,16 @@
     transform: translateY(10px);
   }
 }
+
+@media (max-height: 700px) {
+  .page {
+    justify-content: flex-start;
+    padding-top: 28px;
+  }
+  .hint {
+    margin-bottom: 14px;
+  }
+  .card {
+    height: 140px;
+  }
+}
