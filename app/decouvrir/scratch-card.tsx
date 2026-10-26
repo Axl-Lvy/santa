@@ -15,6 +15,7 @@ export function ScratchCard({ gifteeName }: { gifteeName: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [revealed, setRevealed] = useState(false);
   const [hint, setHint] = useState(false);
+  const [painted, setPainted] = useState(false);
   const touched = useRef(false);
   const moves = useRef(0);
   const last = useRef<{ x: number; y: number } | null>(null);
@@ -49,6 +50,9 @@ export function ScratchCard({ gifteeName }: { gifteeName: string }) {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.lineWidth = BRUSH * 2;
+    // The name stays hidden until the gold layer covers it.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPainted(true);
 
     const timer = setTimeout(() => {
       if (!touched.current) setHint(true);
@@ -85,11 +89,17 @@ export function ScratchCard({ gifteeName }: { gifteeName: string }) {
       <div className={styles.card}>
         <div>
           <div className={styles.label}>Tu fais un cadeau à</div>
-          <div className={styles.name}>{gifteeName}</div>
+          <div
+            className={styles.name}
+            aria-hidden={!painted || !revealed}
+            style={painted ? undefined : { visibility: "hidden" }}
+          >
+            {gifteeName}
+          </div>
         </div>
         <canvas
           ref={canvasRef}
-          className={`${styles.canvas} ${revealed ? styles.canvasGone : ""}`}
+          className={`${styles.canvas} ${painted ? "" : styles.canvasUnpainted} ${revealed ? styles.canvasGone : ""}`}
           aria-label="Carte à gratter : frotte-la pour découvrir le prénom"
           role="img"
           onPointerDown={(e) => {
