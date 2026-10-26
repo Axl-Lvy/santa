@@ -43,3 +43,28 @@ describe("LiveRefresh", () => {
     expect(reload).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("LiveRefresh when the browser gives up", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.stubGlobal("EventSource", Object.assign(FakeEventSource, { CLOSED: 2 }));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it("reconnects itself after a fatal error, and reloads after five failures", () => {
+    const reload = vi.fn();
+    Object.defineProperty(window, "location", { value: { reload }, writable: true });
+    render(<LiveRefresh />);
+    for (let attempt = 1; attempt <= 4; attempt++) {
+      const es = FakeEventSource.last;
+      Object.assign(es, { readyState: 2 });
+      es.onerror?.();
+      vi.advanceTimersByTime(30_000);
+      expect(FakeEventSource.last).not.toBe(es);
+    }
+    expect(reload).not.toHaveBeenCalled();
+    Object.assign(FakeEventSource.last, { readyState: 2 });
+    FakeEventSource.last.onerror?.();
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+});

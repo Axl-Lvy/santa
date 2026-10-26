@@ -43,12 +43,10 @@ describe("ChatComposer across a reload", () => {
   });
 
   it("never cuts a long message and shows why the server refused it", async () => {
-    const onSend = vi
-      .fn()
-      .mockResolvedValue({
-        ok: false,
-        error: "Ton message est trop long (2000 caractères maximum).",
-      });
+    const onSend = vi.fn().mockResolvedValue({
+      ok: false,
+      error: "Ton message est trop long (2000 caractères maximum).",
+    });
     render(<ChatComposer placeholder="Écrire…" storageKey="k" onSend={onSend} />);
     const long = "a".repeat(2100);
     await userEvent.click(screen.getByPlaceholderText("Écrire…"));

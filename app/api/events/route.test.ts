@@ -49,3 +49,12 @@ describe("GET /api/events", () => {
     expect(done).toBe(true);
   });
 });
+
+describe("GET /api/events after the client left", () => {
+  it("never throws into the code that publishes", async () => {
+    viewer.current = { email: "a@b.fr", isAdmin: false, participant: { id: 77 } };
+    const res = await GET(new Request("http://x/api/events"));
+    await res.body!.cancel();
+    expect(() => publish(77, "ideas")).not.toThrow();
+  });
+});
