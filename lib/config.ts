@@ -1,21 +1,15 @@
 export type Config = {
   databasePath: string;
   dataKeyHex: string;
-  adminEmail: string;
-  cfTeamDomain: string | null;
-  cfAud: string | null;
-  smtp: { host: string; port: number; user: string; password: string } | null;
-  mailFrom: string;
+  adminName: string;
+  adminPin: string;
   appUrl: string;
-  devIdentityEmail: string | null;
   production: boolean;
-  /** Test site (dev-santa): the admin may act as anyone, mail is captured instead of sent. */
+  /** Test site (dev-santa): the admin may act as anyone. */
   impersonation: boolean;
 };
 
 export class ConfigError extends Error {}
-
-const DEFAULT_MAIL_FROM = '"Père Noël secret" <no-reply@axl-lvy.fr>';
 
 /** Parses and validates the environment, listing every problem at once. */
 export function loadConfig(env: NodeJS.ProcessEnv): Config {
@@ -27,46 +21,25 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     return value ?? "";
   };
 
-  const production = env.NODE_ENV === "production";
-  const impersonation = read("SANTA_IMPERSONATION") === "on";
-  const devIdentity = read("DEV_IDENTITY_EMAIL");
-  if (devIdentity && production) problems.push("DEV_IDENTITY_EMAIL must not be set in production");
-
   const databasePath = need("DATABASE_PATH");
   const dataKeyHex = need("SANTA_DATA_KEY");
   if (dataKeyHex && !/^[0-9a-fA-F]{64}$/.test(dataKeyHex)) {
     problems.push("SANTA_DATA_KEY must be 32 bytes as 64 hex characters");
   }
-  const adminEmail = need("ADMIN_EMAIL").toLowerCase();
+  const adminName = need("ADMIN_NAME");
+  const adminPin = need("ADMIN_PIN");
+  if (adminPin && !/^\d{4}$/.test(adminPin)) problems.push("ADMIN_PIN must be exactly 4 digits");
   const appUrl = need("APP_URL").replace(/\/+$/, "");
-
-  const cfRequired = production || !devIdentity;
-  const cfTeamDomain = cfRequired ? need("CF_ACCESS_TEAM_DOMAIN") : read("CF_ACCESS_TEAM_DOMAIN");
-  const cfAud = cfRequired ? need("CF_ACCESS_AUD") : read("CF_ACCESS_AUD");
-
-  let smtp: Config["smtp"] = null;
-  if ((production && !impersonation) || read("SMTP_HOST")) {
-    const host = need("SMTP_HOST");
-    const port = Number(need("SMTP_PORT"));
-    if (!Number.isInteger(port) || port <= 0) problems.push("SMTP_PORT must be a port number");
-    smtp = { host, port, user: need("SMTP_USER"), password: need("SMTP_PASSWORD") };
-  }
-  const mailFrom =
-    smtp && production ? need("MAIL_FROM") : (read("MAIL_FROM") ?? DEFAULT_MAIL_FROM);
 
   if (problems.length > 0) throw new ConfigError(problems.join("; "));
   return {
     databasePath,
     dataKeyHex,
-    adminEmail,
-    cfTeamDomain: cfTeamDomain || null,
-    cfAud: cfAud || null,
-    smtp,
-    mailFrom,
+    adminName,
+    adminPin,
     appUrl,
-    devIdentityEmail: devIdentity?.toLowerCase() ?? null,
-    production,
-    impersonation,
+    production: env.NODE_ENV === "production",
+    impersonation: read("SANTA_IMPERSONATION") === "on",
   };
 }
 

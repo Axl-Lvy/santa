@@ -6,10 +6,7 @@ const allowed = [
   "event.drawn_at",
   "participant.id",
   "participant.first_name",
-  "participant.email",
   "participant.revealed_at",
-  "participant.draw_email_sent_at",
-  "participant.activity_enc",
   "pair_rule.a_id",
   "pair_rule.b_id",
   "assignment_blob.id",
@@ -38,6 +35,17 @@ const allowed = [
   "read_state.participant_id",
   "read_state.kind",
   "read_state.last_read_at_enc",
+  "session.token_hash",
+  "session.participant_id",
+  "session.is_admin",
+  "login_event.id",
+  "login_event.participant_id",
+  "login_event.name",
+  "login_event.ok",
+  "login_event.at",
+  "login_event.ip",
+  "login_event.user_agent",
+  "login_event.country",
 ];
 
 describe("privacy rules 1-3: schema", () => {
@@ -62,7 +70,7 @@ describe("privacy rules 1-3: schema", () => {
 describe("privacy rule 3: no hidden insertion order", () => {
   it("keeps read state and anonymous messages in key order, not insertion order", () => {
     const db = testDb();
-    for (const table of ["read_state", "anon_message"]) {
+    for (const table of ["read_state", "anon_message", "session"]) {
       const sql = db
         .prepare("SELECT sql FROM sqlite_master WHERE name = ?")
         .pluck()

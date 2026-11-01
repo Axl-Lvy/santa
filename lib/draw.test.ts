@@ -7,8 +7,6 @@ import { getEvent } from "./event";
 import { addRule } from "./rules";
 import { NoValidDrawError } from "./solver";
 
-vi.mock("./mail/draw-emails", () => ({ sendDrawEmails: vi.fn().mockResolvedValue(undefined) }));
-
 afterEach(() => resetAssignmentCache());
 
 describe("runDraw", () => {

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { pageAs, seedFamily } from "./helpers";
+import { login, pageAs, seedFamily } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -11,7 +11,7 @@ test("the admin sets up the family and sees the checks", async ({ page }) => {
 });
 
 test("a wish refuses a javascript: link and accepts https", async ({ browser, contextOptions }) => {
-  const leon = await pageAs(browser, contextOptions, "leon@test.fr");
+  const leon = await pageAs(browser, contextOptions, "Léon");
   await leon.goto("/envies");
   await leon.getByRole("button", { name: "＋ Ajouter une envie" }).click();
   await leon.getByLabel("Qu'est-ce qui te ferait plaisir ?").fill("Un vinyle de jazz");
@@ -27,18 +27,34 @@ test("a family message appears on another phone without reloading", async ({
   browser,
   contextOptions,
 }) => {
-  const leon = await pageAs(browser, contextOptions, "leon@test.fr");
-  const mamie = await pageAs(browser, contextOptions, "mamie@test.fr");
-  await mamie.goto("/messages/famille");
+  const leon = await pageAs(browser, contextOptions, "Léon");
+  const monique = await pageAs(browser, contextOptions, "Monique");
+  await monique.goto("/messages/famille");
   await leon.goto("/messages/famille");
-  await mamie.waitForTimeout(1000);
+  await monique.waitForTimeout(1000);
   await leon.getByRole("textbox").fill("On fait ça chez Mamie ?");
   await leon.getByRole("button", { name: "Envoyer" }).click();
-  await expect(mamie.getByText("On fait ça chez Mamie ?")).toBeVisible({ timeout: 5000 });
+  await expect(monique.getByText("On fait ça chez Mamie ?")).toBeVisible({ timeout: 5000 });
 });
 
-test("someone outside the family is told so", async ({ browser, contextOptions }) => {
-  const stranger = await pageAs(browser, contextOptions, "inconnu@test.fr");
-  await stranger.goto("/");
-  await expect(stranger.getByText("Tu ne fais pas partie de ce tirage.")).toBeVisible();
+test("an unknown name is told so", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Ton prénom").fill("Zorro");
+  await page.getByRole("button", { name: "Entrer" }).click();
+  await expect(page.getByText("Je ne te trouve pas.", { exact: false })).toBeVisible();
+});
+
+test("a name typed without accents logs in", async ({ page }) => {
+  await login(page, "leon");
+  await expect(page.getByText("Bonjour Léon")).toBeVisible();
+});
+
+test("Axel without the right code stays out", async ({ page }) => {
+  await page.goto("/organisation");
+  await page.getByLabel("Ton prénom").fill("axel");
+  await page.getByRole("button", { name: "Entrer" }).click();
+  await page.getByLabel("Code secret").fill("0000");
+  await page.getByRole("button", { name: "Entrer" }).click();
+  await expect(page.getByText("Ce n'est pas le bon code.")).toBeVisible();
+  await expect(page.getByText("Préparer le tirage")).toHaveCount(0);
 });

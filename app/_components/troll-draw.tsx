@@ -28,7 +28,9 @@ export function TrollDraw({ onPick, people, variant = "inline" }: Props) {
             </span>
             <span className={styles.ctaText}>
               <span className={styles.ctaTitle}>Trouver une idée cadeau</span>
-              <span className={styles.ctaSub}>En panne d&apos;inspiration ? L&apos;algorithme s&apos;en charge.</span>
+              <span className={styles.ctaSub}>
+                En panne d&apos;inspiration ? L&apos;algorithme s&apos;en charge.
+              </span>
             </span>
             <span className={styles.ctaArrow} aria-hidden>
               →

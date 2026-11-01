@@ -1,10 +1,12 @@
 import { seedParticipants, testDb } from "@/test-utils/db";
 
-import { DuplicateEmailError, LockedError, ValidationError } from "./errors";
+import { DuplicateNameError, LockedError, ValidationError } from "./errors";
 import { setBudget } from "./event";
 import {
   addParticipant,
+  findParticipantByName,
   listParticipants,
+  normalizeName,
   removeParticipant,
   updateParticipant,
 } from "./participants";
@@ -15,26 +17,46 @@ function markDrawn(db: ReturnType<typeof testDb>) {
 }
 
 describe("participants", () => {
-  it("stores a trimmed first name and a normalised email", () => {
+  it("stores a trimmed first name and nothing else", () => {
     const db = testDb();
-    const p = addParticipant(db, { firstName: " Léon ", email: " Leon@Test.FR " });
-    expect(p).toMatchObject({ firstName: "Léon", email: "leon@test.fr" });
+    const p = addParticipant(db, { firstName: " Léon " });
+    expect(p).toEqual({ id: p.id, firstName: "Léon", revealedAt: null });
   });
 
-  it("refuses the same email in another case", () => {
+  it("refuses a name that matches another guest's once normalised", () => {
     const db = testDb();
-    addParticipant(db, { firstName: "Léon", email: "leon@test.fr" });
-    expect(() => addParticipant(db, { firstName: "Léo", email: "LEON@test.fr" })).toThrow(
-      DuplicateEmailError,
+    addParticipant(db, { firstName: "Hélène" });
+    expect(() => addParticipant(db, { firstName: "Helene" })).toThrow(DuplicateNameError);
+    expect(() => addParticipant(db, { firstName: "Helene" })).toThrow(
+      "Quelqu'un porte déjà ce prénom.",
     );
   });
 
-  it("refuses an empty first name or an invalid email", () => {
+  it("refuses an empty first name", () => {
     const db = testDb();
-    expect(() => addParticipant(db, { firstName: "  ", email: "a@b.fr" })).toThrow(ValidationError);
-    expect(() => addParticipant(db, { firstName: "A", email: "pas-un-email" })).toThrow(
-      ValidationError,
+    expect(() => addParticipant(db, { firstName: "  " })).toThrow(ValidationError);
+  });
+
+  it("refuses a rename onto another guest's name, but allows a case fix", () => {
+    const db = testDb();
+    const [leon] = seedParticipants(db, ["Léon", "Hélène"]);
+    expect(() => updateParticipant(db, leon.id, { firstName: "helene" }, "Axel")).toThrow(
+      DuplicateNameError,
     );
+    expect(updateParticipant(db, leon.id, { firstName: "léon" }, "Axel").firstName).toBe("léon");
+  });
+
+  it("never renames a guest to or from the admin's name", () => {
+    const db = testDb();
+    const [axel, leon] = seedParticipants(db, ["Axel", "Léon"]);
+    const message = "Le prénom de l'organisateur ne peut pas changer.";
+    expect(() => updateParticipant(db, leon.id, { firstName: "axel" }, "Axel")).toThrow(message);
+    expect(() => updateParticipant(db, axel.id, { firstName: "Axelle" }, "Axel")).toThrow(message);
+  });
+
+  it("lets the admin add themself", () => {
+    const db = testDb();
+    expect(addParticipant(db, { firstName: "Axel" }).firstName).toBe("Axel");
   });
 
   it("lists by first name, case-insensitively", () => {
@@ -78,25 +100,35 @@ describe("participants", () => {
   });
 
   describe("after the draw", () => {
-    it("locks membership and rules but not names, emails or budget", () => {
+    it("locks membership and rules but not names or budget", () => {
       const db = testDb();
       const [a, b, c] = seedParticipants(db, ["Axel", "Léon", "Mamie", "Papa"]);
       addRule(db, a.id, b.id);
       markDrawn(db);
 
-      expect(() => addParticipant(db, { firstName: "Julie", email: "julie@test.fr" })).toThrow(
-        LockedError,
-      );
+      expect(() => addParticipant(db, { firstName: "Julie" })).toThrow(LockedError);
       expect(() => removeParticipant(db, c.id)).toThrow(LockedError);
       expect(() => addRule(db, a.id, c.id)).toThrow(LockedError);
       expect(() => removeRule(db, a.id, b.id)).toThrow(LockedError);
-      expect(
-        updateParticipant(db, c.id, { firstName: "Mamou", email: "mamou@test.fr" }),
-      ).toMatchObject({ firstName: "Mamou", email: "mamou@test.fr" });
-      expect(() =>
-        updateParticipant(db, c.id, { firstName: "Mamou", email: b.email.toUpperCase() }),
-      ).toThrow(DuplicateEmailError);
+      expect(updateParticipant(db, c.id, { firstName: "Mamou" }, "Axel")).toMatchObject({
+        firstName: "Mamou",
+      });
       expect(() => setBudget(db, 25)).not.toThrow();
     });
+  });
+});
+
+describe("names", () => {
+  it("normalises case, accents, hyphens and spaces", () => {
+    expect(normalizeName("  LÉON ")).toBe("leon");
+    expect(normalizeName("marie  claire")).toBe("marie claire");
+    expect(normalizeName("Marie-Claire")).toBe("marie claire");
+  });
+
+  it("finds a guest by a loosely typed name, and only by the whole name", () => {
+    const db = testDb();
+    const [helene] = seedParticipants(db, ["Hélène", "Léon"]);
+    expect(findParticipantByName(db, "helene")?.id).toBe(helene.id);
+    expect(findParticipantByName(db, "Hélèn")).toBeNull();
   });
 });

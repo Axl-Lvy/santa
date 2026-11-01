@@ -28,7 +28,7 @@ export function DrawButton({ disabled, count }: { disabled: boolean; count: numb
           C&apos;est <b>définitif</b> : les participants et les règles ne pourront plus changer.
         </p>
         <p style={{ margin: 0 }}>
-          Les {count} participants recevront un email pour découvrir leur personne. Toi non plus, tu
+          Les {count} participants découvriront leur personne en ouvrant le site. Toi non plus, tu
           ne verras pas le résultat.
         </p>
         {error ? <p className={styles.error}>{error}</p> : null}

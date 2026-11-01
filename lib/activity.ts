@@ -1,46 +1,8 @@
 import { box } from "./crypto";
-import { tx, type Db } from "./db";
+import type { Db } from "./db";
 import { now } from "./time";
 
 export type Kind = "giftee" | "santa" | "group" | "ideas";
-
-type Sealed = { lastSeenAt: string | null; lastDigestAt: string | null };
-
-function readActivity(db: Db, participantId: number): Sealed {
-  const raw = db
-    .prepare("SELECT activity_enc FROM participant WHERE id = ?")
-    .pluck()
-    .get(participantId) as string | null | undefined;
-  return raw ? box().open<Sealed>(raw) : { lastSeenAt: null, lastDigestAt: null };
-}
-
-function writeActivity(db: Db, participantId: number, change: Partial<Sealed>): void {
-  tx(db, () => {
-    const next = { ...readActivity(db, participantId), ...change };
-    db.prepare("UPDATE participant SET activity_enc = ? WHERE id = ?").run(
-      box().seal(next),
-      participantId,
-    );
-  });
-}
-
-const toDate = (iso: string | null) => (iso ? new Date(iso) : null);
-
-export function getActivity(
-  db: Db,
-  participantId: number,
-): { lastSeenAt: Date | null; lastDigestAt: Date | null } {
-  const a = readActivity(db, participantId);
-  return { lastSeenAt: toDate(a.lastSeenAt), lastDigestAt: toDate(a.lastDigestAt) };
-}
-
-export function touchSeen(db: Db, participantId: number, at: Date = now()): void {
-  writeActivity(db, participantId, { lastSeenAt: at.toISOString() });
-}
-
-export function markDigestSent(db: Db, participantId: number, at: Date = now()): void {
-  writeActivity(db, participantId, { lastDigestAt: at.toISOString() });
-}
 
 export function getLastRead(db: Db, participantId: number, kind: Kind): Date | null {
   const raw = db

@@ -14,20 +14,18 @@ import {
 
 import admin from "./organisation.module.css";
 
-type Person = { id: number; firstName: string; email: string };
+type Person = { id: number; firstName: string };
 
 export function ParticipantForm({ people, locked }: { people: Person[]; locked: boolean }) {
   const [editing, setEditing] = useState<Person | "new" | null>(null);
   const [removing, setRemoving] = useState<Person | null>(null);
   const [confirmEdit, setConfirmEdit] = useState(false);
   const [firstName, setFirstName] = useState("");
-  const [email, setEmail] = useState("");
   const { pending, error, setError, run } = useAction();
 
   const open = (p: Person | "new") => {
     setEditing(p);
     setFirstName(p === "new" ? "" : p.firstName);
-    setEmail(p === "new" ? "" : p.email);
     setConfirmEdit(false);
     setError(null);
   };
@@ -42,8 +40,8 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
     run(
       () =>
         editing === "new"
-          ? addParticipantAction(firstName, email)
-          : updateParticipantAction(editing.id, firstName, email),
+          ? addParticipantAction(firstName)
+          : updateParticipantAction(editing.id, firstName),
       close,
     );
   };
@@ -63,7 +61,6 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
           <div key={p.id} className={admin.item}>
             <button type="button" className={admin.itemMain} onClick={() => open(p)}>
               <b>{p.firstName}</b>
-              <span>{p.email}</span>
             </button>
             {locked ? null : (
               <button
@@ -97,20 +94,8 @@ export function ParticipantForm({ people, locked }: { people: Person[]; locked: 
           onChange={(e) => setFirstName(e.target.value)}
           autoComplete="off"
         />
-        <label className={sheetStyles.label} htmlFor="p-email">
-          Email
-        </label>
-        <input
-          id="p-email"
-          className={sheetStyles.field}
-          type="email"
-          inputMode="email"
-          autoCapitalize="none"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
         <p className={admin.hint}>
-          Pense aussi à lui donner accès dans cf-admin (groupe secretsanta-users).
+          Son vrai prénom : c&apos;est ce qu&apos;il ou elle tapera pour entrer.
         </p>
         {confirmEdit && editing !== "new" && editing !== null ? (
           <p className={styles.error}>Modifier {editing.firstName} ? Le tirage ne change pas.</p>

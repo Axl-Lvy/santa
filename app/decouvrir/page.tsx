@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 
 import cardStyles from "@/app/_components/card.module.css";
-import { Outsider } from "@/app/_components/outsider";
+import { LoginScreen } from "@/app/_components/login-screen";
+import { NotAGuest } from "@/app/_components/not-a-guest";
 import { gifteeOf } from "@/lib/assignment";
 import { getDb } from "@/lib/db";
 import { isDrawn } from "@/lib/event";
@@ -16,8 +17,9 @@ export const dynamic = "force-dynamic";
 
 export default async function Decouvrir() {
   const viewer = await getViewer();
-  const me = viewer?.participant;
-  if (!me) return <Outsider email={viewer?.email ?? ""} />;
+  if (!viewer) return <LoginScreen />;
+  const me = viewer.participant;
+  if (!me) return <NotAGuest />;
   const db = getDb();
   if (revealGate(isDrawn(db), me.revealedAt) === "home") redirect("/");
   const giftee = getParticipant(db, gifteeOf(db, me.id)!);

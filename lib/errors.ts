@@ -9,9 +9,9 @@ export class LockedError extends UserError {
   }
 }
 
-export class DuplicateEmailError extends UserError {
+export class DuplicateNameError extends UserError {
   constructor() {
-    super("Cette adresse email est déjà utilisée par quelqu'un d'autre.");
+    super("Quelqu'un porte déjà ce prénom.");
   }
 }
 

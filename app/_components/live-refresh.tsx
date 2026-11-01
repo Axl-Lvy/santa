@@ -8,7 +8,7 @@ const MAX_BACKOFF_MS = 30_000;
 
 /**
  * Refreshes the page on every server event. Reconnects with backoff when the browser gives up on the
- * stream, and reloads after repeated failures so an expired Access session goes back through login.
+ * stream, and reloads after repeated failures so an ended session goes back to the login screen.
  */
 export function LiveRefresh() {
   const router = useRouter();

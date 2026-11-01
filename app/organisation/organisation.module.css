@@ -164,3 +164,38 @@
   font-size: 13px;
   font-weight: 800;
 }
+
+.logEntry {
+  padding: 8px 0;
+  border-bottom: 1px solid #efe6d4;
+  font-size: 14px;
+}
+
+.logEntry:last-child {
+  border-bottom: 0;
+}
+
+.logEntry summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+  cursor: pointer;
+  list-style: none;
+}
+
+.logEntry summary::-webkit-details-marker {
+  display: none;
+}
+
+.logMeta {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.logRaw {
+  margin: 6px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+  overflow-wrap: anywhere;
+}

@@ -5,24 +5,22 @@ import { useState } from "react";
 
 import styles from "./dev-switcher.module.css";
 
-type Person = { firstName: string; email: string; revealed: boolean };
+type Person = { id: number; firstName: string; revealed: boolean };
 
 export function DevSwitcherPanel({
-  current,
+  currentId,
   people,
-  adminEmail,
 }: {
-  current: string;
+  currentId: number | null;
   people: Person[];
-  adminEmail: string;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const currentName = people.find((p) => p.email === current)?.firstName ?? current;
+  const currentName = people.find((p) => p.id === currentId)?.firstName ?? "Moi";
 
   // A full navigation on purpose: the API route sets the cookie, then redirects back here.
-  const switchHref = (email: string) =>
-    `/api/dev/as?email=${encodeURIComponent(email)}&next=${encodeURIComponent(pathname)}`;
+  const switchHref = (id: number | "", next = pathname) =>
+    `/api/dev/as?id=${id}&next=${encodeURIComponent(next)}`;
 
   return (
     <>
@@ -37,53 +35,26 @@ export function DevSwitcherPanel({
       {open ? (
         <div className={styles.panel} role="dialog" aria-label="Changer de compte (test)">
           <p className={styles.title}>Test : être quelqu&apos;un d&apos;autre</p>
-          {people.some((p) => p.email === adminEmail) ? null : (
-            <a
-              href={switchHref(adminEmail)}
-              className={styles.person}
-              aria-current={current === adminEmail}
-            >
-              <span>Moi 👑</span>
-              <span className={styles.meta}>{adminEmail}</span>
-            </a>
-          )}
+          <a href={switchHref("")} className={styles.person}>
+            <span>Moi 👑</span>
+          </a>
           {people.map((p) => (
             <a
-              key={p.email}
-              href={switchHref(p.email)}
+              key={p.id}
+              href={switchHref(p.id)}
               className={styles.person}
-              aria-current={p.email === current}
+              aria-current={p.id === currentId}
             >
-              <span>
-                {p.firstName}
-                {p.email === adminEmail ? " 👑" : ""}
-              </span>
-              <span className={styles.meta}>{p.revealed ? "a gratté" : p.email}</span>
+              <span>{p.firstName}</span>
+              <span className={styles.meta}>{p.revealed ? "a gratté" : ""}</span>
             </a>
           ))}
           {people.length === 0 ? (
             <p className={styles.meta}>Personne encore : ajoute des gens dans Organisation.</p>
           ) : null}
-          <form className={styles.form} action="/api/dev/as" method="get">
-            <input type="hidden" name="next" value={pathname} />
-            <input
-              type="email"
-              name="email"
-              required
-              placeholder="autre email…"
-              aria-label="Autre email"
-            />
-            <button type="submit">OK</button>
-          </form>
           <div className={styles.links}>
-            <a
-              className={styles.link}
-              href={`/api/dev/as?email=${encodeURIComponent(adminEmail)}&next=/organisation`}
-            >
+            <a className={styles.link} href={switchHref("", "/organisation")}>
               Organisation
-            </a>
-            <a className={styles.link} href="/api/dev/outbox" target="_blank" rel="noreferrer">
-              Emails envoyés
             </a>
           </div>
         </div>

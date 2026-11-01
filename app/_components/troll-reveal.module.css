@@ -8,8 +8,7 @@
   overflow: hidden;
   background:
     radial-gradient(ellipse 80% 60% at 50% 35%, rgb(201 162 74 / 0.28), transparent 60%),
-    radial-gradient(ellipse 100% 80% at 50% 100%, rgb(15 30 22 / 0.9), transparent 50%),
-    var(--fir);
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgb(15 30 22 / 0.9), transparent 50%), var(--fir);
   color: var(--cream);
   animation: veil 0.5s ease-out;
 }

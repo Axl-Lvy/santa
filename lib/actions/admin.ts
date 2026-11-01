@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getConfig } from "../config";
 import { getDb } from "../db";
 import { runDraw } from "../draw";
-import { UserError, ValidationError } from "../errors";
+import { ValidationError } from "../errors";
 import { setBudget } from "../event";
-import { resendDrawEmail } from "../mail/draw-emails";
 import { addParticipant, removeParticipant, updateParticipant } from "../participants";
 import { addRule, removeRule } from "../rules";
 import { requireAdmin } from "../viewer";
@@ -22,19 +22,15 @@ async function adminDo(fn: () => void): Promise<ActionResult> {
   return result;
 }
 
-export async function addParticipantAction(
-  firstName: string,
-  email: string,
-): Promise<ActionResult> {
-  return adminDo(() => addParticipant(getDb(), { firstName, email }));
+export async function addParticipantAction(firstName: string): Promise<ActionResult> {
+  return adminDo(() => addParticipant(getDb(), { firstName }));
 }
 
 export async function updateParticipantAction(
   id: number,
   firstName: string,
-  email: string,
 ): Promise<ActionResult> {
-  return adminDo(() => updateParticipant(getDb(), id, { firstName, email }));
+  return adminDo(() => updateParticipant(getDb(), id, { firstName }, getConfig().adminName));
 }
 
 export async function removeParticipantAction(id: number): Promise<ActionResult> {
@@ -61,17 +57,4 @@ export async function setBudgetAction(raw: string): Promise<ActionResult> {
 
 export async function launchDrawAction(): Promise<ActionResult> {
   return adminDo(() => runDraw(getDb()));
-}
-
-export async function resendDrawEmailAction(id: number): Promise<ActionResult> {
-  await requireAdmin();
-  const result = await attempt(async () => {
-    try {
-      await resendDrawEmail(getDb(), id);
-    } catch {
-      throw new UserError("L'email n'est pas parti. Réessaie dans un moment.");
-    }
-  });
-  revalidatePath("/organisation");
-  return result;
 }

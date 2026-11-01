@@ -1,17 +1,20 @@
 import Link from "next/link";
 
 import styles from "@/app/_components/card.module.css";
+import { LoginScreen } from "@/app/_components/login-screen";
 import { adminChecks, adminStatus } from "@/lib/admin-checks";
 import { getConfig } from "@/lib/config";
 import { getDb } from "@/lib/db";
 import { getEvent } from "@/lib/event";
 import { listParticipants } from "@/lib/participants";
 import { listRules } from "@/lib/rules";
-import { requireAdmin } from "@/lib/viewer";
+import { listLoginEvents } from "@/lib/session";
+import { getViewer, requireAdmin } from "@/lib/viewer";
 
 import { AfterDraw } from "./after-draw";
 import { BudgetForm } from "./budget-form";
 import { DrawButton } from "./draw-button";
+import { LoginLog } from "./login-log";
 import { LoginMessage } from "./login-message";
 import admin from "./organisation.module.css";
 import { ParticipantForm } from "./participant-form";
@@ -20,9 +23,10 @@ import { RuleForm } from "./rule-form";
 export const dynamic = "force-dynamic";
 
 export default async function Organisation() {
-  const viewer = await requireAdmin();
+  if (!(await getViewer())) return <LoginScreen />;
+  await requireAdmin();
   const db = getDb();
-  const people = listParticipants(db).map(({ id, firstName, email }) => ({ id, firstName, email }));
+  const people = listParticipants(db).map(({ id, firstName }) => ({ id, firstName }));
   const rules = listRules(db).map(([a, b]) => [a, b] as [number, number]);
   const { budgetEur, drawnAt } = getEvent(db);
 
@@ -45,11 +49,12 @@ export default async function Organisation() {
         <AfterDraw drawnOn={drawnOn} rows={status.rows} />
         <BudgetForm budgetEur={budgetEur} />
         <ParticipantForm people={people} locked />
+        <LoginLog events={listLoginEvents(db)} />
       </main>
     );
   }
 
-  const checks = adminChecks(db, viewer.email);
+  const checks = adminChecks(db, getConfig().adminName);
 
   return (
     <main className={styles.page} style={{ paddingBottom: 40 }}>
@@ -82,6 +87,7 @@ export default async function Organisation() {
       <DrawButton disabled={!checks.drawPossible} count={people.length} />
 
       <LoginMessage appUrl={getConfig().appUrl} />
+      <LoginLog events={listLoginEvents(db)} />
     </main>
   );
 }

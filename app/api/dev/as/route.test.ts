@@ -15,27 +15,32 @@ describe("GET /api/dev/as", () => {
   });
 
   it("switches identity and returns to the page the switcher was used on", async () => {
-    const res = await call("email=Mamie@Test.fr&next=/envies");
+    const res = await call("id=3&next=/envies");
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toBe("/envies");
-    expect(res.headers.get("set-cookie")).toContain("dev_as=mamie%40test.fr");
+    expect(res.headers.get("set-cookie")).toContain("dev_as=3;");
+  });
+
+  it("goes back to being yourself with an empty id", async () => {
+    const res = await call("id=&next=/");
+    expect(res.headers.get("set-cookie")).toMatch(/dev_as=;.*Max-Age=0/i);
   });
 
   it("only returns to paths on this site", async () => {
     for (const next of ["//evil.example", "https://evil.example", "javascript:alert(1)"]) {
-      const res = await call(`email=a@b.fr&next=${encodeURIComponent(next)}`);
+      const res = await call(`id=3&next=${encodeURIComponent(next)}`);
       expect(res.headers.get("location")).toBe("/");
     }
   });
 
   it("marks the cookie secure when the public request was https", async () => {
-    const res = await call("email=a@b.fr", { "x-forwarded-proto": "https" });
+    const res = await call("id=3", { "x-forwarded-proto": "https" });
     expect(res.headers.get("set-cookie")).toMatch(/Secure/i);
   });
 
   it("does not exist for someone who may not switch accounts", async () => {
     viewer.canImpersonate = false;
-    const res = await call("email=a@b.fr");
+    const res = await call("id=3");
     expect(res.status).toBe(404);
     expect(res.headers.get("set-cookie")).toBeNull();
   });

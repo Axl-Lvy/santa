@@ -14,9 +14,7 @@
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
-    "jose": "^6.2.13",
     "next": "16.4.3",
-    "nodemailer": "^10.2.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1"
@@ -29,7 +27,6 @@
     "@testing-library/user-event": "^14.6.8",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^24.19.2",
-    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.2",
