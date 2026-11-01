@@ -70,4 +70,22 @@ export const MIGRATIONS: string[] = [
     PRIMARY KEY (participant_id, kind)
   ) WITHOUT ROWID;
   `,
+  `
+  CREATE TABLE session (
+    token_hash TEXT PRIMARY KEY,
+    participant_id INTEGER REFERENCES participant(id) ON DELETE CASCADE,
+    is_admin INTEGER NOT NULL CHECK (is_admin IN (0, 1))
+  ) WITHOUT ROWID;
+
+  CREATE TABLE login_event (
+    id INTEGER PRIMARY KEY,
+    participant_id INTEGER REFERENCES participant(id) ON DELETE SET NULL,
+    name TEXT NOT NULL,
+    ok INTEGER NOT NULL CHECK (ok IN (0, 1)),
+    at TEXT NOT NULL,
+    ip TEXT,
+    user_agent TEXT,
+    country TEXT
+  );
+  `,
 ];

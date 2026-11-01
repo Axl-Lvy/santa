@@ -4,7 +4,9 @@ import { DuplicateEmailError, LockedError, ValidationError } from "./errors";
 import { setBudget } from "./event";
 import {
   addParticipant,
+  findParticipantByName,
   listParticipants,
+  normalizeName,
   removeParticipant,
   updateParticipant,
 } from "./participants";
@@ -98,5 +100,20 @@ describe("participants", () => {
       ).toThrow(DuplicateEmailError);
       expect(() => setBudget(db, 25)).not.toThrow();
     });
+  });
+});
+
+describe("names", () => {
+  it("normalises case, accents, hyphens and spaces", () => {
+    expect(normalizeName("  LÉON ")).toBe("leon");
+    expect(normalizeName("marie  claire")).toBe("marie claire");
+    expect(normalizeName("Marie-Claire")).toBe("marie claire");
+  });
+
+  it("finds a guest by a loosely typed name, and only by the whole name", () => {
+    const db = testDb();
+    const [helene] = seedParticipants(db, ["Hélène", "Léon"]);
+    expect(findParticipantByName(db, "helene")?.id).toBe(helene.id);
+    expect(findParticipantByName(db, "Hélèn")).toBeNull();
   });
 });

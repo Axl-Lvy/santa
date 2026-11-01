@@ -48,6 +48,23 @@ export function getParticipant(db: Db, id: number): Participant | null {
   return row ? toParticipant(row) : null;
 }
 
+/** The form of a name used to match logins and to tell guests apart. */
+export function normalizeName(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[-\s]+/g, " ")
+    .trim();
+}
+
+/** The guest whose name matches `typed` once both are normalised. */
+export function findParticipantByName(db: Db, typed: string): Participant | null {
+  const key = normalizeName(typed);
+  if (!key) return null;
+  return listParticipants(db).find((p) => normalizeName(p.firstName) === key) ?? null;
+}
+
 function validated(input: { firstName: string; email: string }): {
   firstName: string;
   email: string;
