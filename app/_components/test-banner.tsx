@@ -14,7 +14,7 @@ export function TestBanner() {
         padding: "6px 12px",
       }}
     >
-      🧪 Site de test : rien n&apos;est réel, aucun email n&apos;est envoyé.
+      🧪 Site de test : rien n&apos;est réel.
     </div>
   );
 }

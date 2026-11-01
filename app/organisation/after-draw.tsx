@@ -1,20 +1,16 @@
 "use client";
 
 import styles from "@/app/_components/card.module.css";
-import { useAction } from "@/app/_components/use-action";
 import type { AdminStatusRow } from "@/lib/admin-checks";
-import { resendDrawEmailAction } from "@/lib/actions/admin";
 
 import admin from "./organisation.module.css";
 
 const LABEL: Record<AdminStatusRow["status"], string> = {
   revealed: "✔ découvert",
   pending: "pas encore",
-  "email-not-sent": "email pas encore envoyé",
 };
 
 export function AfterDraw({ drawnOn, rows }: { drawnOn: string; rows: AdminStatusRow[] }) {
-  const { pending, error, run } = useAction();
   return (
     <>
       <div className={styles.hero} style={{ fontSize: 14 }}>
@@ -30,20 +26,9 @@ export function AfterDraw({ drawnOn, rows }: { drawnOn: string; rows: AdminStatu
             <span className={r.status === "revealed" ? admin.statusOk : admin.statusNo}>
               {LABEL[r.status]}
             </span>
-            {r.status === "revealed" ? null : (
-              <button
-                type="button"
-                className={admin.link}
-                disabled={pending}
-                onClick={() => run(() => resendDrawEmailAction(r.id))}
-              >
-                renvoyer l&apos;email
-              </button>
-            )}
           </div>
         ))}
       </div>
-      {error ? <p className={styles.error}>{error}</p> : null}
     </>
   );
 }

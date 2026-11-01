@@ -87,7 +87,7 @@ export default async function Home() {
                 </div>
                 <div className={styles.heroTitle}>Le tirage n&apos;a pas encore eu lieu</div>
                 <p className={styles.heroText}>
-                  Tu recevras un email le moment venu. En attendant…
+                  Reviens ici le moment venu pour gratter ton ticket. En attendant…
                 </p>
               </div>
               <Link href="/envies" className={styles.row}>

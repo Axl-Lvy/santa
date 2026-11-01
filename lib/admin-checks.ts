@@ -23,7 +23,7 @@ export function adminChecks(
 export type AdminStatusRow = {
   id: number;
   firstName: string;
-  status: "revealed" | "pending" | "email-not-sent";
+  status: "revealed" | "pending";
 };
 
 /** After the draw: who has revealed, never who drew whom (privacy rule 7). */
@@ -33,7 +33,7 @@ export function adminStatus(db: Db): { drawnAt: string; rows: AdminStatusRow[] }
     rows: listParticipants(db).map((p) => ({
       id: p.id,
       firstName: p.firstName,
-      status: p.revealedAt ? "revealed" : p.drawEmailSentAt ? "pending" : "email-not-sent",
+      status: p.revealedAt ? "revealed" : "pending",
     })),
   };
 }

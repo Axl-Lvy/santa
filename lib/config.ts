@@ -4,18 +4,14 @@ export type Config = {
   adminEmail: string;
   cfTeamDomain: string | null;
   cfAud: string | null;
-  smtp: { host: string; port: number; user: string; password: string } | null;
-  mailFrom: string;
   appUrl: string;
   devIdentityEmail: string | null;
   production: boolean;
-  /** Test site (dev-santa): the admin may act as anyone, mail is captured instead of sent. */
+  /** Test site (dev-santa): the admin may act as anyone. */
   impersonation: boolean;
 };
 
 export class ConfigError extends Error {}
-
-const DEFAULT_MAIL_FROM = '"Père Noël secret" <no-reply@axl-lvy.fr>';
 
 /** Parses and validates the environment, listing every problem at once. */
 export function loadConfig(env: NodeJS.ProcessEnv): Config {
@@ -44,16 +40,6 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
   const cfTeamDomain = cfRequired ? need("CF_ACCESS_TEAM_DOMAIN") : read("CF_ACCESS_TEAM_DOMAIN");
   const cfAud = cfRequired ? need("CF_ACCESS_AUD") : read("CF_ACCESS_AUD");
 
-  let smtp: Config["smtp"] = null;
-  if ((production && !impersonation) || read("SMTP_HOST")) {
-    const host = need("SMTP_HOST");
-    const port = Number(need("SMTP_PORT"));
-    if (!Number.isInteger(port) || port <= 0) problems.push("SMTP_PORT must be a port number");
-    smtp = { host, port, user: need("SMTP_USER"), password: need("SMTP_PASSWORD") };
-  }
-  const mailFrom =
-    smtp && production ? need("MAIL_FROM") : (read("MAIL_FROM") ?? DEFAULT_MAIL_FROM);
-
   if (problems.length > 0) throw new ConfigError(problems.join("; "));
   return {
     databasePath,
@@ -61,8 +47,6 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     adminEmail,
     cfTeamDomain: cfTeamDomain || null,
     cfAud: cfAud || null,
-    smtp,
-    mailFrom,
     appUrl,
     devIdentityEmail: devIdentity?.toLowerCase() ?? null,
     production,

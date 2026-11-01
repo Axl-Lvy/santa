@@ -1,7 +1,5 @@
 import { adminStatus } from "@/lib/admin-checks";
 import { loadAssignment, resetAssignmentCache } from "@/lib/assignment";
-import { devOutbox } from "@/lib/mail/transport";
-import { listParticipants } from "@/lib/participants";
 import { testDb } from "@/test-utils/db";
 import { runFullFlow } from "@/test-utils/flow";
 
@@ -21,7 +19,6 @@ afterEach(() => {
 
 async function flow() {
   const db = testDb();
-  devOutbox().length = 0;
   const logs: string[] = [];
   for (const level of ["log", "info", "warn", "error"] as const) {
     vi.spyOn(console, level).mockImplementation((...args: unknown[]) => {
@@ -72,20 +69,6 @@ describe("privacy audit over a whole event", () => {
     const all = logs.join("\n");
     for (const s of secrets) expect(all).not.toContain(s);
     expect(all).not.toContain(JSON.stringify(Object.fromEntries(loadAssignment(db)!)));
-  });
-
-  it("mails nothing for anonymous activity and names only the recipient (rules 8–9)", async () => {
-    const { db, mailsDuringAnonymous, digestMails } = await flow();
-    expect(mailsDuringAnonymous).toEqual([]);
-    const people = listParticipants(db);
-    for (const mail of [...devOutbox(), ...digestMails]) {
-      const me = people.find((p) => p.email === mail.to)!;
-      for (const other of people.filter((p) => p.id !== me.id)) {
-        expect(mail.text).not.toContain(other.firstName);
-        expect(mail.html).not.toContain(other.firstName);
-      }
-    }
-    expect(devOutbox().filter((m) => m.subject.startsWith("🎲"))).toHaveLength(8);
   });
 
   it("shows the admin status only (rule 7)", async () => {

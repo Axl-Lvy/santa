@@ -4,7 +4,6 @@ import { createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
 import { cookies, headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
-import { touchSeen } from "./activity";
 import { getConfig } from "./config";
 import { getDb } from "./db";
 import { isDrawn } from "./event";
@@ -42,25 +41,13 @@ async function verifiedEmail(): Promise<string | null> {
   }
 }
 
-const SEEN_THROTTLE_MS = 60_000;
-const lastSeenWrite = new Map<number, number>();
-
-/** Records a visit, at most once a minute per participant. */
-function noteSeen(participantId: number): void {
-  const t = Date.now();
-  if (t - (lastSeenWrite.get(participantId) ?? 0) < SEEN_THROTTLE_MS) return;
-  lastSeenWrite.set(participantId, t);
-  touchSeen(getDb(), participantId);
-}
-
-/** The person behind this request, or null without a valid identity; records the participant's visit. */
+/** The person behind this request, or null without a valid identity. */
 export async function getViewer(): Promise<Viewer | null> {
   const realEmail = await verifiedEmail();
   if (!realEmail) return null;
   const config = getConfig();
   const email = resolveEmail(realEmail, (await cookies()).get(DEV_AS_COOKIE)?.value, config);
   const participant = resolveParticipant(getDb(), email);
-  if (participant) noteSeen(participant.id);
   return {
     email,
     realEmail,

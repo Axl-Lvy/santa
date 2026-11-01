@@ -39,17 +39,13 @@ describe("adminStatus", () => {
     const db = testDb();
     const [a, b, c] = seedParticipants(db, ["Axel", "Léon", "Mamie"]);
     db.prepare("UPDATE event SET drawn_at = '2026-12-01T10:00:00.000Z'").run();
-    db.prepare("UPDATE participant SET draw_email_sent_at = 'x' WHERE id IN (?, ?)").run(
-      a.id,
-      b.id,
-    );
     db.prepare("UPDATE participant SET revealed_at = 'x' WHERE id = ?").run(a.id);
     const status = adminStatus(db);
     expect(status.drawnAt).toBe("2026-12-01T10:00:00.000Z");
     expect(status.rows).toEqual([
       { id: a.id, firstName: "Axel", status: "revealed" },
       { id: b.id, firstName: "Léon", status: "pending" },
-      { id: c.id, firstName: "Mamie", status: "email-not-sent" },
+      { id: c.id, firstName: "Mamie", status: "pending" },
     ]);
   });
 });

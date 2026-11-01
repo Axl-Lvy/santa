@@ -82,9 +82,6 @@ export function DevSwitcherPanel({
             >
               Organisation
             </a>
-            <a className={styles.link} href="/api/dev/outbox" target="_blank" rel="noreferrer">
-              Emails envoyés
-            </a>
           </div>
         </div>
       ) : null}
