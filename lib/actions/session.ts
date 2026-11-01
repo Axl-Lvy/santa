@@ -29,7 +29,7 @@ export async function loginAction(name: string, pin: string): Promise<ActionResu
     (await cookies()).set(SESSION_COOKIE, outcome.token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: h.get("x-forwarded-proto") === "https",
+      secure: config.appUrl.startsWith("https://"),
       path: "/",
       expires: SESSION_END,
     });

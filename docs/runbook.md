@@ -73,6 +73,12 @@ Declare `santa_data:` under the top-level `volumes:` and add the `SANTA_*` keys,
 
 `SANTA_ADMIN_NAME` is the first name Axel types (`Axel`); `SANTA_ADMIN_PIN` is exactly 4 digits. Wrong PINs lock PIN login for 15 minutes after 5 tries, doubling each time; an open session is never affected.
 
+**Switching from the Access + email setup** (both services crash at start without `ADMIN_NAME` and `ADMIN_PIN`, and every push to `main` redeploys them):
+
+1. In home-lab, add `ADMIN_NAME` / `ADMIN_PIN` to both the `santa` and `dev-santa` blocks, and `SANTA_ADMIN_NAME`, `SANTA_ADMIN_PIN` (and dev-santa's own PIN) to the mini PC `.env`. Deploy. The old image ignores them.
+2. Merge the first-name login to `main`; CI deploys the new image.
+3. Remove `ADMIN_EMAIL`, `CF_ACCESS_*`, `SMTP_*` and `MAIL_FROM` from compose and `.env`, then do the Cloudflare clean-up below.
+
 `SANTA_DATA_KEY` comes from `openssl rand -hex 32`. Set it once and never rotate it. It lives only in the mini PC `.env`, so back it up with that file: losing it loses the draw.
 
 ## 3. Cloudflare (by hand, in the dashboard)
@@ -106,4 +112,6 @@ docker compose -f docker-compose.yml -f docker-compose.apps.yml --profile apps u
 
 - Anyone who knows a guest's first name can log in as them. That is by design: Organisation → « Connexions » lists every login with its device and IP, so an impostor shows up there.
 - The app sends no email. Guests learn about the draw by opening the site.
+- Anyone can lock PIN login by typing « Axel » with wrong codes. Open sessions keep working; if Axel has none left, restarting the container resets the lockout (it lives in memory).
+- Don't change `SANTA_ADMIN_NAME` once Axel is a guest: the old name would then log in without the PIN.
 - Nothing in the app or the logs shows who drew whom. The draw is final: there is no redo.
