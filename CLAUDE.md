@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-Private Secret Santa site for 8 people, hosted on the home-lab mini PC behind Cloudflare Access.
+Private Secret Santa site for 8 people, hosted on the home-lab mini PC. Guests log in with their first
+name (the admin adds a PIN); no Cloudflare Access, no email.
 
 - Stack and hosting decisions: `docs/superpowers/specs/2026-10-26-stack-design.md`. Treat them as
   settled; the app behaviour is still open.
