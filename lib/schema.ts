@@ -88,4 +88,15 @@ export const MIGRATIONS: string[] = [
     country TEXT
   );
   `,
+  `
+  CREATE TABLE participant_new (
+    id INTEGER PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    revealed_at TEXT
+  );
+  INSERT INTO participant_new (id, first_name, revealed_at)
+    SELECT id, first_name, revealed_at FROM participant;
+  DROP TABLE participant;
+  ALTER TABLE participant_new RENAME TO participant;
+  `,
 ];

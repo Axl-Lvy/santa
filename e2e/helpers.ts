@@ -3,10 +3,10 @@ import type { Browser, BrowserContextOptions, Page } from "@playwright/test";
 export const ADMIN_PIN = "1234";
 
 export const FAMILY = [
-  { firstName: "Axel", email: "axel@test.fr" },
-  { firstName: "Léon", email: "leon@test.fr" },
-  { firstName: "Mamie", email: "mamie@test.fr" },
-  { firstName: "Papa", email: "papa@test.fr" },
+  { firstName: "Axel" },
+  { firstName: "Léon" },
+  { firstName: "Monique" },
+  { firstName: "Bernard" },
 ];
 
 /** Logs this page's browser in through the first-name screen (Axel with the PIN). */
@@ -41,12 +41,11 @@ export async function seedFamily(page: Page): Promise<void> {
   for (const p of FAMILY) {
     await page.getByRole("button", { name: "＋ Ajouter" }).first().click();
     await page.getByLabel("Prénom").fill(p.firstName);
-    await page.getByLabel("Email").fill(p.email);
     await page.getByRole("button", { name: "Ajouter", exact: true }).click();
-    await page.getByText(p.email).waitFor();
+    await page.getByRole("button", { name: p.firstName, exact: true }).waitFor();
   }
-  await page.getByLabel("Première personne").selectOption({ label: "Mamie" });
-  await page.getByLabel("Deuxième personne").selectOption({ label: "Papa" });
+  await page.getByLabel("Première personne").selectOption({ label: "Monique" });
+  await page.getByLabel("Deuxième personne").selectOption({ label: "Bernard" });
   await page.getByRole("button", { name: "＋ Ajouter" }).nth(1).click();
-  await page.getByText("Mamie✕Papa").waitFor();
+  await page.getByText("Monique✕Bernard").waitFor();
 }

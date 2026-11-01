@@ -28,13 +28,13 @@ test("a family message appears on another phone without reloading", async ({
   contextOptions,
 }) => {
   const leon = await pageAs(browser, contextOptions, "Léon");
-  const mamie = await pageAs(browser, contextOptions, "Mamie");
-  await mamie.goto("/messages/famille");
+  const monique = await pageAs(browser, contextOptions, "Monique");
+  await monique.goto("/messages/famille");
   await leon.goto("/messages/famille");
-  await mamie.waitForTimeout(1000);
+  await monique.waitForTimeout(1000);
   await leon.getByRole("textbox").fill("On fait ça chez Mamie ?");
   await leon.getByRole("button", { name: "Envoyer" }).click();
-  await expect(mamie.getByText("On fait ça chez Mamie ?")).toBeVisible({ timeout: 5000 });
+  await expect(monique.getByText("On fait ça chez Mamie ?")).toBeVisible({ timeout: 5000 });
 });
 
 test("an unknown name is told so", async ({ page }) => {

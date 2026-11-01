@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getConfig } from "../config";
 import { getDb } from "../db";
 import { runDraw } from "../draw";
 import { ValidationError } from "../errors";
@@ -21,19 +22,15 @@ async function adminDo(fn: () => void): Promise<ActionResult> {
   return result;
 }
 
-export async function addParticipantAction(
-  firstName: string,
-  email: string,
-): Promise<ActionResult> {
-  return adminDo(() => addParticipant(getDb(), { firstName, email }));
+export async function addParticipantAction(firstName: string): Promise<ActionResult> {
+  return adminDo(() => addParticipant(getDb(), { firstName }));
 }
 
 export async function updateParticipantAction(
   id: number,
   firstName: string,
-  email: string,
 ): Promise<ActionResult> {
-  return adminDo(() => updateParticipant(getDb(), id, { firstName, email }));
+  return adminDo(() => updateParticipant(getDb(), id, { firstName }, getConfig().adminName));
 }
 
 export async function removeParticipantAction(id: number): Promise<ActionResult> {

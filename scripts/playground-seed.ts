@@ -7,16 +7,16 @@ import { setBudget } from "../lib/event";
 import { addParticipant } from "../lib/participants";
 import { addRule } from "../lib/rules";
 
-/** Local playground cast. Edit names/emails, then re-run `npm run playground`. */
-const CAST: { firstName: string; email: string }[] = [
-  { firstName: "Axel", email: "axel@test.fr" },
-  { firstName: "Tonton Riri", email: "riri@test.fr" },
-  { firstName: "Mamie Boule", email: "boule@test.fr" },
-  { firstName: "Kéké", email: "keke@test.fr" },
-  { firstName: "Zouzou", email: "zouzou@test.fr" },
-  { firstName: "Pépé Flocon", email: "flocon@test.fr" },
-  { firstName: "Titouan", email: "titouan@test.fr" },
-  { firstName: "Bernadette", email: "bernadette@test.fr" },
+/** Local playground cast. Edit names, then re-run `npm run playground`. */
+const CAST = [
+  "Axel",
+  "Henri",
+  "Monique",
+  "Kevin",
+  "Zoé",
+  "Bernard",
+  "Titouan",
+  "Bernadette",
 ];
 
 function assertLocalPlayground(): string {
@@ -46,16 +46,17 @@ function main(): void {
 
   const db = openDb(dbPath);
   try {
-    const people = CAST.map((p) => addParticipant(db, p));
+    const people = CAST.map((firstName) => addParticipant(db, { firstName }));
     setBudget(db, 25);
-    const mamie = people.find((p) => p.email === "boule@test.fr")!;
-    const pepe = people.find((p) => p.email === "flocon@test.fr")!;
-    addRule(db, mamie.id, pepe.id);
+    const monique = people.find((p) => p.firstName === "Monique")!;
+    const bernard = people.find((p) => p.firstName === "Bernard")!;
+    addRule(db, monique.id, bernard.id);
 
     console.log(`playground: seeded ${people.length} people in ${dbPath}`);
     console.log("  → restart npm run dev if it was already running (SQLite handle is cached)");
     console.log("  → http://localhost:3000");
-    console.log("  → 🧪 panel to switch identity; « Emails envoyés » for fake mail");
+    console.log("  → log in with any first name above; Axel's PIN is 0000");
+    console.log("  → as Axel, the 🧪 panel switches to anyone");
     console.log("  → /organisation to rename people, rules, or launch the draw");
     console.log("  → edit CAST in scripts/playground-seed.ts and re-run to reset");
   } finally {

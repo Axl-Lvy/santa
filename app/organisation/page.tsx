@@ -24,7 +24,7 @@ export default async function Organisation() {
   if (!(await getViewer())) return <LoginScreen />;
   await requireAdmin();
   const db = getDb();
-  const people = listParticipants(db).map(({ id, firstName, email }) => ({ id, firstName, email }));
+  const people = listParticipants(db).map(({ id, firstName }) => ({ id, firstName }));
   const rules = listRules(db).map(([a, b]) => [a, b] as [number, number]);
   const { budgetEur, drawnAt } = getEvent(db);
 

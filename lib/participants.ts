@@ -1,39 +1,23 @@
 import type { Db } from "./db";
 import { tx } from "./db";
-import { DuplicateEmailError, LockedError, ValidationError } from "./errors";
+import { DuplicateNameError, LockedError, ValidationError } from "./errors";
 import { isDrawn } from "./event";
 
 export type Participant = {
   id: number;
   firstName: string;
-  email: string;
   revealedAt: string | null;
-  drawEmailSentAt: string | null;
 };
 
-export type ParticipantRow = {
-  id: number;
-  first_name: string;
-  email: string;
-  revealed_at: string | null;
-  draw_email_sent_at: string | null;
-};
+type ParticipantRow = { id: number; first_name: string; revealed_at: string | null };
 
-export const PARTICIPANT_COLUMNS = "id, first_name, email, revealed_at, draw_email_sent_at";
+const PARTICIPANT_COLUMNS = "id, first_name, revealed_at";
 
-export function toParticipant(row: ParticipantRow): Participant {
-  return {
-    id: row.id,
-    firstName: row.first_name,
-    email: row.email,
-    revealedAt: row.revealed_at,
-    drawEmailSentAt: row.draw_email_sent_at,
-  };
+function toParticipant(row: ParticipantRow): Participant {
+  return { id: row.id, firstName: row.first_name, revealedAt: row.revealed_at };
 }
 
 const collator = new Intl.Collator("fr", { sensitivity: "base" });
-const normalizeEmail = (s: string) => s.trim().toLowerCase();
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function listParticipants(db: Db): Participant[] {
   const rows = db
@@ -65,54 +49,49 @@ export function findParticipantByName(db: Db, typed: string): Participant | null
   return listParticipants(db).find((p) => normalizeName(p.firstName) === key) ?? null;
 }
 
-function validated(input: { firstName: string; email: string }): {
-  firstName: string;
-  email: string;
-} {
+function validName(input: { firstName: string }): string {
   const firstName = input.firstName.trim();
-  const email = normalizeEmail(input.email);
   if (firstName.length < 1 || firstName.length > 40) {
     throw new ValidationError("Le prénom doit faire entre 1 et 40 caractères.");
   }
-  if (!EMAIL.test(email)) throw new ValidationError("Cette adresse email n'a pas l'air valide.");
-  return { firstName, email };
+  return firstName;
 }
 
-function emailTaken(db: Db, email: string, exceptId: number | null): boolean {
-  return (
-    db.prepare("SELECT 1 FROM participant WHERE email = ? AND id IS NOT ?").get(email, exceptId) !==
-    undefined
-  );
+function assertNameFree(db: Db, firstName: string, exceptId: number | null): void {
+  const other = findParticipantByName(db, firstName);
+  if (other && other.id !== exceptId) throw new DuplicateNameError();
 }
 
-export function addParticipant(db: Db, input: { firstName: string; email: string }): Participant {
+export function addParticipant(db: Db, input: { firstName: string }): Participant {
   return tx(db, () => {
     if (isDrawn(db)) throw new LockedError();
-    const { firstName, email } = validated(input);
-    if (emailTaken(db, email, null)) throw new DuplicateEmailError();
+    const firstName = validName(input);
+    assertNameFree(db, firstName, null);
     const id = Number(
-      db.prepare("INSERT INTO participant (first_name, email) VALUES (?, ?)").run(firstName, email)
-        .lastInsertRowid,
+      db.prepare("INSERT INTO participant (first_name) VALUES (?)").run(firstName).lastInsertRowid,
     );
     return getParticipant(db, id)!;
   });
 }
 
-/** Renames a participant or fixes their email; allowed after the draw. */
+/** Renames a guest, also after the draw; never to or from `adminName`, which carries the admin role. */
 export function updateParticipant(
   db: Db,
   id: number,
-  input: { firstName: string; email: string },
+  input: { firstName: string },
+  adminName: string,
 ): Participant {
   return tx(db, () => {
-    const { firstName, email } = validated(input);
-    if (!getParticipant(db, id)) throw new ValidationError("Cette personne n'existe pas.");
-    if (emailTaken(db, email, id)) throw new DuplicateEmailError();
-    db.prepare("UPDATE participant SET first_name = ?, email = ? WHERE id = ?").run(
-      firstName,
-      email,
-      id,
-    );
+    const firstName = validName(input);
+    const current = getParticipant(db, id);
+    if (!current) throw new ValidationError("Cette personne n'existe pas.");
+    const admin = normalizeName(adminName);
+    const wasAdmin = normalizeName(current.firstName) === admin;
+    if (wasAdmin !== (normalizeName(firstName) === admin)) {
+      throw new ValidationError("Le prénom de l'organisateur ne peut pas changer.");
+    }
+    assertNameFree(db, firstName, id);
+    db.prepare("UPDATE participant SET first_name = ? WHERE id = ?").run(firstName, id);
     return getParticipant(db, id)!;
   });
 }
