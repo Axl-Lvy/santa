@@ -8,11 +8,13 @@ import { getDb } from "@/lib/db";
 import { getEvent } from "@/lib/event";
 import { listParticipants } from "@/lib/participants";
 import { listRules } from "@/lib/rules";
+import { listLoginEvents } from "@/lib/session";
 import { getViewer, requireAdmin } from "@/lib/viewer";
 
 import { AfterDraw } from "./after-draw";
 import { BudgetForm } from "./budget-form";
 import { DrawButton } from "./draw-button";
+import { LoginLog } from "./login-log";
 import { LoginMessage } from "./login-message";
 import admin from "./organisation.module.css";
 import { ParticipantForm } from "./participant-form";
@@ -47,6 +49,7 @@ export default async function Organisation() {
         <AfterDraw drawnOn={drawnOn} rows={status.rows} />
         <BudgetForm budgetEur={budgetEur} />
         <ParticipantForm people={people} locked />
+        <LoginLog events={listLoginEvents(db)} />
       </main>
     );
   }
@@ -84,6 +87,7 @@ export default async function Organisation() {
       <DrawButton disabled={!checks.drawPossible} count={people.length} />
 
       <LoginMessage appUrl={getConfig().appUrl} />
+      <LoginLog events={listLoginEvents(db)} />
     </main>
   );
 }
