@@ -1,9 +1,10 @@
 import { migrate, openDb } from "./db";
+import { MIGRATIONS } from "./schema";
 
 describe("openDb", () => {
-  it("migrates to version 1 with the single event row", () => {
+  it("migrates to the latest version with the single event row", () => {
     const db = openDb(":memory:");
-    expect(db.pragma("user_version", { simple: true })).toBe(1);
+    expect(db.pragma("user_version", { simple: true })).toBe(MIGRATIONS.length);
     expect(db.prepare("SELECT id FROM event").all()).toEqual([{ id: 1 }]);
   });
 
