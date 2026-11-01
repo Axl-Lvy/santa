@@ -33,8 +33,7 @@ type Props = {
 
 function prefersReducedMotion(): boolean {
   return (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 }
 
@@ -138,10 +137,13 @@ export function TrollReveal({ people, onClose, onPick }: Props) {
         );
       }
       timers.push(
-        window.setTimeout(() => {
-          if (run !== runRef.current) return;
-          setProgress(Math.round(((i + 1) / script.length) * 92));
-        }, start + script[i].holdMs * 0.85),
+        window.setTimeout(
+          () => {
+            if (run !== runRef.current) return;
+            setProgress(Math.round(((i + 1) / script.length) * 92));
+          },
+          start + script[i].holdMs * 0.85,
+        ),
       );
       t += script[i].holdMs;
     }

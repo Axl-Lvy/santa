@@ -8,16 +8,7 @@ import { addParticipant } from "../lib/participants";
 import { addRule } from "../lib/rules";
 
 /** Local playground cast. Edit names, then re-run `npm run playground`. */
-const CAST = [
-  "Axel",
-  "Henri",
-  "Monique",
-  "Kevin",
-  "Zoé",
-  "Bernard",
-  "Titouan",
-  "Bernadette",
-];
+const CAST = ["Axel", "Henri", "Monique", "Kevin", "Zoé", "Bernard", "Titouan", "Bernadette"];
 
 function assertLocalPlayground(): string {
   if (process.env.NODE_ENV === "production") {

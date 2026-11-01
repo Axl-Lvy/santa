@@ -29,7 +29,9 @@ describe("openDb", () => {
       "INSERT INTO wish (owner_id, title, position, created_at, updated_at) VALUES (4, 'x', 0, 't', 't')",
     ).run();
     db.prepare("INSERT INTO pair_rule (a_id, b_id) VALUES (4, 7)").run();
-    db.prepare("INSERT INTO session (token_hash, participant_id, is_admin) VALUES ('h', 7, 0)").run();
+    db.prepare(
+      "INSERT INTO session (token_hash, participant_id, is_admin) VALUES ('h', 7, 0)",
+    ).run();
 
     migrate(db);
 

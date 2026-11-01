@@ -4,9 +4,9 @@ Everything that happens outside this repo: home-lab wiring, Cloudflare, deploys,
 
 Two sites run the same image:
 
-| Site | Service | Purpose |
-|---|---|---|
-| `santa.axl-lvy.fr` | `santa` | The real event. |
+| Site                   | Service     | Purpose                                                                                                                                                            |
+| ---------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `santa.axl-lvy.fr`     | `santa`     | The real event.                                                                                                                                                    |
 | `dev-santa.axl-lvy.fr` | `dev-santa` | Test site. `SANTA_IMPERSONATION=on`: the admin gets the 🧪 account switcher, every page shows a « site de test » banner. Its own database, data key and admin PIN. |
 
 Every push to `main` runs CI, publishes `ghcr.io/axl-lvy/santa:latest`, then calls the mini PC

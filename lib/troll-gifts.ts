@@ -5,12 +5,14 @@ export const TROLL_GIFTS: TrollGift[] = [
   {
     id: "patate",
     title: "Une pomme de terre emballée dans du papier cadeau",
-    roast: "Avec un petit mot : « Pour que tu gardes la patate. » Budget : 0,30 €. Humiliation : maximale.",
+    roast:
+      "Avec un petit mot : « Pour que tu gardes la patate. » Budget : 0,30 €. Humiliation : maximale.",
   },
   {
     id: "brosse-chiottes",
     title: "Une brosse à chiottes d'occasion",
-    roast: "Avec l'étiquette « Comme neuve ». Impossible de faire pire sur le plan sanitaire et affectif.",
+    roast:
+      "Avec l'étiquette « Comme neuve ». Impossible de faire pire sur le plan sanitaire et affectif.",
   },
   {
     id: "chaussette-seule",
@@ -30,7 +32,8 @@ export const TROLL_GIFTS: TrollGift[] = [
   {
     id: "clown-porcelaine",
     title: "Une figurine de clown en porcelaine",
-    roast: "Avec un regard inquiétant. Le genre de cadeau que tu n'oses pas jeter mais que tu ne veux surtout pas regarder.",
+    roast:
+      "Avec un regard inquiétant. Le genre de cadeau que tu n'oses pas jeter mais que tu ne veux surtout pas regarder.",
   },
   {
     id: "peigne-wilfried",
@@ -40,7 +43,8 @@ export const TROLL_GIFTS: TrollGift[] = [
   {
     id: "gravier",
     title: "Un sachet de gravier",
-    roast: "Avec une étiquette « Collection de pierres rares ». Ramassé sur le parking avant le réveillon.",
+    roast:
+      "Avec une étiquette « Collection de pierres rares ». Ramassé sur le parking avant le réveillon.",
   },
   {
     id: "pull-trop-petit",
@@ -55,7 +59,8 @@ export const TROLL_GIFTS: TrollGift[] = [
   {
     id: "boite-vide",
     title: "Une boîte vide",
-    roast: "Avec une carte : « L'essentiel est invisible pour les yeux. » Aucun autre cadeau ne suit.",
+    roast:
+      "Avec une carte : « L'essentiel est invisible pour les yeux. » Aucun autre cadeau ne suit.",
   },
   {
     id: "cd-raye",
@@ -75,7 +80,8 @@ export const TROLL_GIFTS: TrollGift[] = [
   {
     id: "piece-puzzle",
     title: "Une seule pièce de puzzle",
-    roast: "« Il faut savoir apprécier les petites choses. » Les 999 autres pièces ne sont pas incluses.",
+    roast:
+      "« Il faut savoir apprécier les petites choses. » Les 999 autres pièces ne sont pas incluses.",
   },
   {
     id: "magnet-limoges",
@@ -100,7 +106,8 @@ export const TROLL_GIFTS: TrollGift[] = [
   {
     id: "ticket-caisse",
     title: "Un ticket de caisse de tes propres courses",
-    roast: "Dans une enveloppe, avec ce mot : « Cette année, je t'offre le souvenir d'un moment partagé. »",
+    roast:
+      "Dans une enveloppe, avec ce mot : « Cette année, je t'offre le souvenir d'un moment partagé. »",
   },
 ];
 
