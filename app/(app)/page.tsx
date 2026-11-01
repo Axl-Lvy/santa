@@ -12,6 +12,8 @@ import { AppTabBar } from "@/app/_components/app-tab-bar";
 import { requirePageParticipant } from "@/lib/viewer";
 import { listWishes } from "@/lib/wishes";
 
+import { LogoutLink } from "./logout-link";
+
 export default async function Home() {
   const { viewer, me } = await requirePageParticipant();
   const db = getDb();
@@ -133,6 +135,7 @@ export default async function Home() {
               <span className={styles.rowText}>Budget : environ {budgetEur} €</span>
             </div>
           ) : null}
+          <LogoutLink />
         </main>
       </TabTransition>
       <AppTabBar me={me} />

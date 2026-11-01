@@ -6,57 +6,43 @@ const production = {
   NODE_ENV: "production",
   DATABASE_PATH: "/data/santa.db",
   SANTA_DATA_KEY: key,
-  ADMIN_EMAIL: "axel@x.fr",
-  CF_ACCESS_TEAM_DOMAIN: "team.cloudflareaccess.com",
-  CF_ACCESS_AUD: "aud",
+  ADMIN_NAME: "Axel",
+  ADMIN_PIN: "1234",
   APP_URL: "https://santa.axl-lvy.fr",
 } as NodeJS.ProcessEnv;
 
 describe("loadConfig", () => {
-  it("accepts a complete production env", () => {
+  it("accepts a complete production env without Cloudflare Access or email", () => {
     const c = loadConfig(production);
-    expect(c.production).toBe(true);
-  });
-
-  it("ignores SMTP variables", () => {
-    const c = loadConfig({ ...production, SMTP_HOST: "x" });
+    expect(c).toMatchObject({ production: true, adminName: "Axel", adminPin: "1234" });
     expect(c).not.toHaveProperty("smtp");
-    expect(c).not.toHaveProperty("mailFrom");
+    expect(c).not.toHaveProperty("cfAud");
+    expect(c).not.toHaveProperty("adminEmail");
   });
 
-  it("names every missing production variable", () => {
-    const env = { ...production, SANTA_DATA_KEY: undefined, CF_ACCESS_AUD: undefined };
+  it("names every missing variable", () => {
+    const env = { ...production, SANTA_DATA_KEY: undefined, ADMIN_NAME: undefined };
     expect(() => loadConfig(env)).toThrow(ConfigError);
     expect(() => loadConfig(env)).toThrow(
-      /SANTA_DATA_KEY[\s\S]*CF_ACCESS_AUD|CF_ACCESS_AUD[\s\S]*SANTA_DATA_KEY/,
+      /SANTA_DATA_KEY[\s\S]*ADMIN_NAME|ADMIN_NAME[\s\S]*SANTA_DATA_KEY/,
     );
+  });
+
+  it("requires the admin PIN to be exactly 4 digits", () => {
+    expect(() => loadConfig({ ...production, ADMIN_PIN: undefined })).toThrow(/ADMIN_PIN/);
+    for (const pin of ["123", "12a4", "12345"]) {
+      expect(() => loadConfig({ ...production, ADMIN_PIN: pin })).toThrow(
+        "ADMIN_PIN must be exactly 4 digits",
+      );
+    }
   });
 
   it("rejects a data key that is not 64 hex chars", () => {
     expect(() => loadConfig({ ...production, SANTA_DATA_KEY: "abc" })).toThrow(/SANTA_DATA_KEY/);
   });
 
-  it("refuses the dev identity bypass in production", () => {
-    expect(() => loadConfig({ ...production, DEV_IDENTITY_EMAIL: "a@b.fr" })).toThrow(
-      /DEV_IDENTITY_EMAIL/,
-    );
-  });
-
-  it("allows dev without cloudflare when a dev identity is set", () => {
-    const c = loadConfig({
-      NODE_ENV: "development",
-      DATABASE_PATH: "./data/dev.db",
-      SANTA_DATA_KEY: key,
-      ADMIN_EMAIL: "axel@x.fr",
-      APP_URL: "http://localhost:3000",
-      DEV_IDENTITY_EMAIL: "Axel@X.fr",
-    } as NodeJS.ProcessEnv);
-    expect(c.cfAud).toBeNull();
-    expect(c.devIdentityEmail).toBe("axel@x.fr");
-  });
-
-  it("normalises the admin email", () => {
-    expect(loadConfig({ ...production, ADMIN_EMAIL: " Axel@X.fr " }).adminEmail).toBe("axel@x.fr");
+  it("trims the admin name", () => {
+    expect(loadConfig({ ...production, ADMIN_NAME: " Axel " }).adminName).toBe("Axel");
   });
 });
 

@@ -2,7 +2,6 @@ import type { Db } from "./db";
 import { tx } from "./db";
 import { DuplicateEmailError, LockedError, ValidationError } from "./errors";
 import { isDrawn } from "./event";
-import { normalizeEmail } from "./identity";
 
 export type Participant = {
   id: number;
@@ -33,6 +32,7 @@ export function toParticipant(row: ParticipantRow): Participant {
 }
 
 const collator = new Intl.Collator("fr", { sensitivity: "base" });
+const normalizeEmail = (s: string) => s.trim().toLowerCase();
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function listParticipants(db: Db): Participant[] {

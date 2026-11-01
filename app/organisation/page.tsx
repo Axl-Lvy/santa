@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 import styles from "@/app/_components/card.module.css";
+import { LoginScreen } from "@/app/_components/login-screen";
 import { adminChecks, adminStatus } from "@/lib/admin-checks";
 import { getConfig } from "@/lib/config";
 import { getDb } from "@/lib/db";
 import { getEvent } from "@/lib/event";
 import { listParticipants } from "@/lib/participants";
 import { listRules } from "@/lib/rules";
-import { requireAdmin } from "@/lib/viewer";
+import { getViewer, requireAdmin } from "@/lib/viewer";
 
 import { AfterDraw } from "./after-draw";
 import { BudgetForm } from "./budget-form";
@@ -20,7 +21,8 @@ import { RuleForm } from "./rule-form";
 export const dynamic = "force-dynamic";
 
 export default async function Organisation() {
-  const viewer = await requireAdmin();
+  if (!(await getViewer())) return <LoginScreen />;
+  await requireAdmin();
   const db = getDb();
   const people = listParticipants(db).map(({ id, firstName, email }) => ({ id, firstName, email }));
   const rules = listRules(db).map(([a, b]) => [a, b] as [number, number]);
@@ -49,7 +51,7 @@ export default async function Organisation() {
     );
   }
 
-  const checks = adminChecks(db, viewer.email);
+  const checks = adminChecks(db, getConfig().adminName);
 
   return (
     <main className={styles.page} style={{ paddingBottom: 40 }}>

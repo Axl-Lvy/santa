@@ -31,8 +31,8 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 120_000,
     env: {
-      DEV_IDENTITY_EMAIL: "axel@test.fr",
-      ADMIN_EMAIL: "axel@test.fr",
+      ADMIN_NAME: "Axel",
+      ADMIN_PIN: "1234",
       DATABASE_PATH,
       SANTA_DATA_KEY: "00".repeat(32),
       APP_URL: `http://localhost:${PORT}`,
